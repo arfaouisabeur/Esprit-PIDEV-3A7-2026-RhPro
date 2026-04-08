@@ -6,41 +6,51 @@ use App\Repository\CandidatRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CandidatRepository::class)]
+#[ORM\Table(name: "candidat")]
 class Candidat
 {
     #[ORM\Id]
-    #[ORM\Column(name: 'user_id', type: 'bigint')]
-    private ?int $userId = null;
+    #[ORM\OneToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false)]
+    private ?Users $user = null;
 
-    #[ORM\Column(name: 'niveau_etude', type: 'string', length: 120, nullable: true)]
-    private ?string $niveauEtude = null;
+    #[ORM\Column(nullable: true)]
+    private ?string $niveau_etude = null;
 
-    #[ORM\Column(type: 'integer')]
-    private ?int $experience = null;
+    #[ORM\Column]
+    private int $experience;
 
-    public function getUserId(): ?int
+    // 🔥 IMPORTANT FIX
+    public function getId(): ?int
     {
-        return $this->userId;
+        return $this->user?->getId();
     }
 
-    public function setUserId(int $userId): static
+    // ===== GETTERS & SETTERS =====
+
+    public function getUser(): ?Users
     {
-        $this->userId = $userId;
+        return $this->user;
+    }
+
+    public function setUser(Users $user): static
+    {
+        $this->user = $user;
         return $this;
     }
 
     public function getNiveauEtude(): ?string
     {
-        return $this->niveauEtude;
+        return $this->niveau_etude;
     }
 
-    public function setNiveauEtude(?string $niveauEtude): static
+    public function setNiveauEtude(?string $niveau_etude): static
     {
-        $this->niveauEtude = $niveauEtude;
+        $this->niveau_etude = $niveau_etude;
         return $this;
     }
 
-    public function getExperience(): ?int
+    public function getExperience(): int
     {
         return $this->experience;
     }
@@ -50,4 +60,8 @@ class Candidat
         $this->experience = $experience;
         return $this;
     }
+    public function __toString(): string
+{
+    return (string) $this->getId();
+}
 }

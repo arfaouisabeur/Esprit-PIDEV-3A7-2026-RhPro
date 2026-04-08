@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DemandeService index{% endblock %}
+
+{% block body %}
+    <h1>DemandeService index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Date_demande</th>
+                <th>Statut</th>
+                <th>Etape_workflow</th>
+                <th>Date_derniere_etape</th>
+                <th>Priorite</th>
+                <th>Deadline_reponse</th>
+                <th>Sla_depasse</th>
+                <th>Pdf_path</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for demande_service in demande_services %}
+            <tr>
+                <td>{{ demande_service.id }}</td>
+                <td>{{ demande_service.titre }}</td>
+                <td>{{ demande_service.description }}</td>
+                <td>{{ demande_service.dateDemande }}</td>
+                <td>{{ demande_service.statut }}</td>
+                <td>{{ demande_service.etapeWorkflow }}</td>
+                <td>{{ demande_service.dateDerniereEtape }}</td>
+                <td>{{ demande_service.priorite }}</td>
+                <td>{{ demande_service.deadlineReponse }}</td>
+                <td>{{ demande_service.slaDepasse }}</td>
+                <td>{{ demande_service.pdfPath }}</td>
+                <td>
+                    <a href="{{ path('app_demande_service_show', {'id': demande_service.id}) }}">show</a>
+                    <a href="{{ path('app_demande_service_edit', {'id': demande_service.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="12">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_demande_service_new') }}">Create new</a>
+{% endblock %}

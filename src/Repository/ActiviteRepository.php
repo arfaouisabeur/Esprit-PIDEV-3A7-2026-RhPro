@@ -6,6 +6,9 @@ use App\Entity\Activite;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Activite>
+ */
 class ActiviteRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

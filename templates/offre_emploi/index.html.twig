@@ -12,11 +12,10 @@
                 <th>Titre</th>
                 <th>Description</th>
                 <th>Localisation</th>
-                <th>TypeContrat</th>
-                <th>DatePublication</th>
-                <th>DateExpiration</th>
+                <th>Type_contrat</th>
+                <th>Date_publication</th>
+                <th>Date_expiration</th>
                 <th>Statut</th>
-                <th>RhId</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -28,10 +27,9 @@
                 <td>{{ offre_emploi.description }}</td>
                 <td>{{ offre_emploi.localisation }}</td>
                 <td>{{ offre_emploi.typeContrat }}</td>
-                <td>{{ offre_emploi.datePublication ? offre_emploi.datePublication|date('Y-m-d') : '' }}</td>
-                <td>{{ offre_emploi.dateExpiration ? offre_emploi.dateExpiration|date('Y-m-d') : '' }}</td>
+                <td>{{ offre_emploi.datePublication }}</td>
+                <td>{{ offre_emploi.dateExpiration }}</td>
                 <td>{{ offre_emploi.statut }}</td>
-                <td>{{ offre_emploi.rhId }}</td>
                 <td>
                     <a href="{{ path('app_offre_emploi_show', {'id': offre_emploi.id}) }}">show</a>
                     <a href="{{ path('app_offre_emploi_edit', {'id': offre_emploi.id}) }}">edit</a>
@@ -39,7 +37,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="10">no records found</td>
+                <td colspan="9">no records found</td>
             </tr>
         {% endfor %}
         </tbody>

@@ -6,20 +6,30 @@ use App\Repository\RhRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RhRepository::class)]
+#[ORM\Table(name: "rh")]
 class Rh
 {
     #[ORM\Id]
-    #[ORM\Column(name: 'user_id', type: 'bigint')]
-    private ?int $userId = null;
+    #[ORM\OneToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false)]
+    private ?Users $user = null;
 
-    public function getUserId(): ?int
+    // 🔥 CRITICAL FIX
+    public function getId(): ?int
     {
-        return $this->userId;
+        return $this->user?->getId();
     }
 
-    public function setUserId(int $userId): static
+    // ===== GETTERS & SETTERS =====
+
+    public function getUser(): ?Users
     {
-        $this->userId = $userId;
+        return $this->user;
+    }
+
+    public function setUser(Users $user): static
+    {
+        $this->user = $user;
         return $this;
     }
 }

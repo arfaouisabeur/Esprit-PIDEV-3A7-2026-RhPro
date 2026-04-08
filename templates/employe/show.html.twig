@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Employe{% endblock %}
+
+{% block body %}
+    <h1>Employe</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Matricule</th>
+                <td>{{ employe.matricule }}</td>
+            </tr>
+            <tr>
+                <th>Position</th>
+                <td>{{ employe.position }}</td>
+            </tr>
+            <tr>
+                <th>Date_embauche</th>
+                <td>{{ employe.dateEmbauche ? employe.dateEmbauche|date('Y-m-d') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_employe_index') }}">back to list</a>
+
+    <a href="{{ path('app_employe_edit', {'user': employe.user}) }}">edit</a>
+
+    {{ include('employe/_delete_form.html.twig') }}
+{% endblock %}

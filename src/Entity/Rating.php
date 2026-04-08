@@ -2,54 +2,42 @@
 
 namespace App\Entity;
 
-use App\Repository\RatingRepository;
 use Doctrine\ORM\Mapping as ORM;
+
+use App\Repository\RatingRepository;
 
 #[ORM\Entity(repositoryClass: RatingRepository::class)]
 class Rating
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column(type: 'bigint')]
-    private int $evenementId;
-    #[ORM\Column(type: 'bigint')]
-    private int $employeId;
-    #[ORM\Column(type: 'text')]
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "evenement_id", referencedColumnName: "id")]
+    private ?Evenement $evenement = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "employe_id", referencedColumnName: "user_id")]
+    private ?Employe $employe = null;
+
+    #[ORM\Column(nullable: false)]
     private string $commentaire;
-    #[ORM\Column(type: 'integer')]
-    private int $etoiles;
-    #[ORM\Column(type: 'datetime')]
-    private \DateTimeInterface $dateCreation;
+
+    #[ORM\Column(nullable: false)]
+    private string $etoiles;
+
+    #[ORM\Column(nullable: false)]
+    private string $date_creation;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function getEvenementid(): int
-    {
-        return $this->evenementId;
-    }
 
-    public function setEvenementid(int $evenementId): static
-    {
-        $this->evenementId = $evenementId;
-
-        return $this;
-    }
-    public function getEmployeid(): int
-    {
-        return $this->employeId;
-    }
-
-    public function setEmployeid(int $employeId): static
-    {
-        $this->employeId = $employeId;
-
-        return $this;
-    }
-    public function getCommentaire(): string
+    public function getCommentaire(): ?string
     {
         return $this->commentaire;
     }
@@ -60,25 +48,51 @@ class Rating
 
         return $this;
     }
-    public function getEtoiles(): int
+
+    public function getEtoiles(): ?string
     {
         return $this->etoiles;
     }
 
-    public function setEtoiles(int $etoiles): static
+    public function setEtoiles(string $etoiles): static
     {
         $this->etoiles = $etoiles;
 
         return $this;
     }
-    public function getDatecreation(): \DateTimeInterface
+
+    public function getDateCreation(): ?string
     {
-        return $this->dateCreation;
+        return $this->date_creation;
     }
 
-    public function setDatecreation(\DateTimeInterface $dateCreation): static
+    public function setDateCreation(string $date_creation): static
     {
-        $this->dateCreation = $dateCreation;
+        $this->date_creation = $date_creation;
+
+        return $this;
+    }
+
+    public function getEvenement(): ?Evenement
+    {
+        return $this->evenement;
+    }
+
+    public function setEvenement(?Evenement $evenement): static
+    {
+        $this->evenement = $evenement;
+
+        return $this;
+    }
+
+    public function getEmploye(): ?Employe
+    {
+        return $this->employe;
+    }
+
+    public function setEmploye(?Employe $employe): static
+    {
+        $this->employe = $employe;
 
         return $this;
     }

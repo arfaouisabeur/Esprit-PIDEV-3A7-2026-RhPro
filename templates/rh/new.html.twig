@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Rh{% endblock %}
+
+{% block body %}
+    <h1>Create new Rh</h1>
+
+    {{ include('rh/_form.html.twig') }}
+
+    <a href="{{ path('app_rh_index') }}">back to list</a>
+{% endblock %}

@@ -1,69 +1,65 @@
 <?php
 
+
 namespace App\Entity;
 
-use App\Repository\DemandeServiceRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\DemandeServiceRepository;
 
 #[ORM\Entity(repositoryClass: DemandeServiceRepository::class)]
+#[ORM\Table(name: "demande_service")]
 class DemandeService
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column(type: 'bigint')]
-    private int $employeId;
-    #[ORM\Column(type: 'bigint', nullable: true)]
-    private ?int $typeServiceId = null;
-    #[ORM\Column(type: 'string', length: 200)]
+
+    #[ORM\Column(nullable: false)]
     private string $titre;
-    #[ORM\Column(type: 'text', nullable: true)]
+
+    #[ORM\Column(nullable: true)]
     private ?string $description = null;
-    #[ORM\Column(type: 'date')]
-    private \DateTimeInterface $dateDemande;
-    #[ORM\Column(type: 'string', length: 20)]
+
+    #[ORM\Column(nullable: false)]
+    private string $date_demande;
+
+    #[ORM\Column(nullable: false)]
     private string $statut;
-    #[ORM\Column(type: 'string', length: 30, nullable: true)]
-    private ?string $etapeWorkflow = null;
-    #[ORM\Column(type: 'date', nullable: true)]
-    private ?\DateTimeInterface $dateDerniereEtape = null;
-    #[ORM\Column(type: 'string', length: 20, nullable: true)]
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "employe_id", referencedColumnName: "user_id")]
+    private ?Employe $employe = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $etape_workflow = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $date_derniere_etape = null;
+
+    #[ORM\Column(nullable: true)]
     private ?string $priorite = null;
-    #[ORM\Column(type: 'date', nullable: true)]
-    private ?\DateTimeInterface $deadlineReponse = null;
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $slaDepasse = null;
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $pdfPath = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $deadline_reponse = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $sla_depasse = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $pdf_path = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "type", referencedColumnName: "id")]
+    private ?TypeService $type = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function getEmployeid(): int
-    {
-        return $this->employeId;
-    }
 
-    public function setEmployeid(int $employeId): static
-    {
-        $this->employeId = $employeId;
-
-        return $this;
-    }
-    public function getTypeserviceid(): ?int
-    {
-        return $this->typeServiceId;
-    }
-
-    public function setTypeserviceid(?int $typeServiceId): static
-    {
-        $this->typeServiceId = $typeServiceId;
-
-        return $this;
-    }
-    public function getTitre(): string
+    public function getTitre(): ?string
     {
         return $this->titre;
     }
@@ -74,6 +70,7 @@ class DemandeService
 
         return $this;
     }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -85,18 +82,20 @@ class DemandeService
 
         return $this;
     }
-    public function getDatedemande(): \DateTimeInterface
+
+    public function getDateDemande(): ?string
     {
-        return $this->dateDemande;
+        return $this->date_demande;
     }
 
-    public function setDatedemande(\DateTimeInterface $dateDemande): static
+    public function setDateDemande(string $date_demande): static
     {
-        $this->dateDemande = $dateDemande;
+        $this->date_demande = $date_demande;
 
         return $this;
     }
-    public function getStatut(): string
+
+    public function getStatut(): ?string
     {
         return $this->statut;
     }
@@ -107,28 +106,31 @@ class DemandeService
 
         return $this;
     }
-    public function getEtapeworkflow(): ?string
+
+    public function getEtapeWorkflow(): ?string
     {
-        return $this->etapeWorkflow;
+        return $this->etape_workflow;
     }
 
-    public function setEtapeworkflow(?string $etapeWorkflow): static
+    public function setEtapeWorkflow(?string $etape_workflow): static
     {
-        $this->etapeWorkflow = $etapeWorkflow;
-
-        return $this;
-    }
-    public function getDatederniereetape(): ?\DateTimeInterface
-    {
-        return $this->dateDerniereEtape;
-    }
-
-    public function setDatederniereetape(?\DateTimeInterface $dateDerniereEtape): static
-    {
-        $this->dateDerniereEtape = $dateDerniereEtape;
+        $this->etape_workflow = $etape_workflow;
 
         return $this;
     }
+
+    public function getDateDerniereEtape(): ?string
+    {
+        return $this->date_derniere_etape;
+    }
+
+    public function setDateDerniereEtape(?string $date_derniere_etape): static
+    {
+        $this->date_derniere_etape = $date_derniere_etape;
+
+        return $this;
+    }
+
     public function getPriorite(): ?string
     {
         return $this->priorite;
@@ -140,36 +142,63 @@ class DemandeService
 
         return $this;
     }
-    public function getDeadlinereponse(): ?\DateTimeInterface
+
+    public function getDeadlineReponse(): ?string
     {
-        return $this->deadlineReponse;
+        return $this->deadline_reponse;
     }
 
-    public function setDeadlinereponse(?\DateTimeInterface $deadlineReponse): static
+    public function setDeadlineReponse(?string $deadline_reponse): static
     {
-        $this->deadlineReponse = $deadlineReponse;
-
-        return $this;
-    }
-    public function getSladepasse(): ?bool
-    {
-        return $this->slaDepasse;
-    }
-
-    public function setSladepasse(?bool $slaDepasse): static
-    {
-        $this->slaDepasse = $slaDepasse;
+        $this->deadline_reponse = $deadline_reponse;
 
         return $this;
     }
-    public function getPdfpath(): ?string
+
+    public function getSlaDepasse(): ?string
     {
-        return $this->pdfPath;
+        return $this->sla_depasse;
     }
 
-    public function setPdfpath(?string $pdfPath): static
+    public function setSlaDepasse(?string $sla_depasse): static
     {
-        $this->pdfPath = $pdfPath;
+        $this->sla_depasse = $sla_depasse;
+
+        return $this;
+    }
+
+    public function getPdfPath(): ?string
+    {
+        return $this->pdf_path;
+    }
+
+    public function setPdfPath(?string $pdf_path): static
+    {
+        $this->pdf_path = $pdf_path;
+
+        return $this;
+    }
+
+    public function getEmploye(): ?Employe
+    {
+        return $this->employe;
+    }
+
+    public function setEmploye(?Employe $employe): static
+    {
+        $this->employe = $employe;
+
+        return $this;
+    }
+
+    public function getType(): ?TypeService
+    {
+        return $this->type;
+    }
+
+    public function setType(?TypeService $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }

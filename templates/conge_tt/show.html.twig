@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CongeTt{% endblock %}
+
+{% block body %}
+    <h1>CongeTt</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ conge_tt.id }}</td>
+            </tr>
+            <tr>
+                <th>Type_conge</th>
+                <td>{{ conge_tt.typeConge }}</td>
+            </tr>
+            <tr>
+                <th>Date_debut</th>
+                <td>{{ conge_tt.dateDebut ? conge_tt.dateDebut|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Date_fin</th>
+                <td>{{ conge_tt.dateFin ? conge_tt.dateFin|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Statut</th>
+                <td>{{ conge_tt.statut }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ conge_tt.description }}</td>
+            </tr>
+            <tr>
+                <th>Document_path</th>
+                <td>{{ conge_tt.documentPath }}</td>
+            </tr>
+            <tr>
+                <th>Ocr_verified</th>
+                <td>{{ conge_tt.ocrVerified ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_conge_tt_index') }}">back to list</a>
+
+    <a href="{{ path('app_conge_tt_edit', {'id': conge_tt.id}) }}">edit</a>
+
+    {{ include('conge_tt/_delete_form.html.twig') }}
+{% endblock %}

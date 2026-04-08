@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Employe index{% endblock %}
+
+{% block body %}
+    <h1>Employe index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Matricule</th>
+                <th>Position</th>
+                <th>Date embauche</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for employe in employes %}
+            <tr>
+                {# ✅ SAFE: use virtual id instead of user object #}
+                <td>{{ employe.id }}</td>
+
+                <td>{{ employe.matricule ?? 'N/A' }}</td>
+                <td>{{ employe.position ?? 'N/A' }}</td>
+
+                <td>
+                    {{ employe.dateEmbauche 
+                        ? employe.dateEmbauche|date('Y-m-d') 
+                        : 'N/A' 
+                    }}
+                </td>
+
+                <td>
+                    {# ✅ ROUTING uses id (clean) #}
+                    <a href="{{ path('app_employe_show', {'id': employe.id}) }}">show</a>
+                    <a href="{{ path('app_employe_edit', {'id': employe.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_employe_new') }}">Create new</a>
+{% endblock %}

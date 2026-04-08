@@ -2,73 +2,54 @@
 
 namespace App\Entity;
 
-use App\Repository\TacheRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\TacheRepository;
 
 #[ORM\Entity(repositoryClass: TacheRepository::class)]
 class Tache
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column(type: 'bigint')]
-    private int $projetId;
-    #[ORM\Column(type: 'bigint')]
-    private int $employeId;
-    #[ORM\Column(type: 'bigint', nullable: true)]
-    private ?int $primeId = null;
-    #[ORM\Column(type: 'string', length: 200)]
+
+    #[ORM\Column(nullable: false)]
     private string $titre;
-    #[ORM\Column(type: 'string', length: 10)]
+
+    #[ORM\Column(nullable: false)]
     private string $statut;
-    #[ORM\Column(type: 'text', nullable: true)]
+
+    #[ORM\Column(nullable: true)]
     private ?string $description = null;
-    #[ORM\Column(type: 'date', nullable: true)]
-    private ?\DateTimeInterface $dateDebut = null;
-    #[ORM\Column(type: 'date', nullable: true)]
-    private ?\DateTimeInterface $dateFin = null;
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $level = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "projet_id", referencedColumnName: "id")]
+    private ?Projet $projet = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "employe_id", referencedColumnName: "user_id")]
+    private ?Employe $employe = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "prime_id", referencedColumnName: "id")]
+    private ?Prime $prime = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $date_debut = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $date_fin = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $level = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function getProjetid(): int
-    {
-        return $this->projetId;
-    }
 
-    public function setProjetid(int $projetId): static
-    {
-        $this->projetId = $projetId;
-
-        return $this;
-    }
-    public function getEmployeid(): int
-    {
-        return $this->employeId;
-    }
-
-    public function setEmployeid(int $employeId): static
-    {
-        $this->employeId = $employeId;
-
-        return $this;
-    }
-    public function getPrimeid(): ?int
-    {
-        return $this->primeId;
-    }
-
-    public function setPrimeid(?int $primeId): static
-    {
-        $this->primeId = $primeId;
-
-        return $this;
-    }
-    public function getTitre(): string
+    public function getTitre(): ?string
     {
         return $this->titre;
     }
@@ -79,7 +60,8 @@ class Tache
 
         return $this;
     }
-    public function getStatut(): string
+
+    public function getStatut(): ?string
     {
         return $this->statut;
     }
@@ -90,6 +72,7 @@ class Tache
 
         return $this;
     }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -101,36 +84,75 @@ class Tache
 
         return $this;
     }
-    public function getDatedebut(): ?\DateTimeInterface
+
+    public function getDateDebut(): ?string
     {
-        return $this->dateDebut;
+        return $this->date_debut;
     }
 
-    public function setDatedebut(?\DateTimeInterface $dateDebut): static
+    public function setDateDebut(?string $date_debut): static
     {
-        $this->dateDebut = $dateDebut;
-
-        return $this;
-    }
-    public function getDatefin(): ?\DateTimeInterface
-    {
-        return $this->dateFin;
-    }
-
-    public function setDatefin(?\DateTimeInterface $dateFin): static
-    {
-        $this->dateFin = $dateFin;
+        $this->date_debut = $date_debut;
 
         return $this;
     }
-    public function getLevel(): ?int
+
+    public function getDateFin(): ?string
+    {
+        return $this->date_fin;
+    }
+
+    public function setDateFin(?string $date_fin): static
+    {
+        $this->date_fin = $date_fin;
+
+        return $this;
+    }
+
+    public function getLevel(): ?string
     {
         return $this->level;
     }
 
-    public function setLevel(?int $level): static
+    public function setLevel(?string $level): static
     {
         $this->level = $level;
+
+        return $this;
+    }
+
+    public function getProjet(): ?Projet
+    {
+        return $this->projet;
+    }
+
+    public function setProjet(?Projet $projet): static
+    {
+        $this->projet = $projet;
+
+        return $this;
+    }
+
+    public function getEmploye(): ?Employe
+    {
+        return $this->employe;
+    }
+
+    public function setEmploye(?Employe $employe): static
+    {
+        $this->employe = $employe;
+
+        return $this;
+    }
+
+    public function getPrime(): ?Prime
+    {
+        return $this->prime;
+    }
+
+    public function setPrime(?Prime $prime): static
+    {
+        $this->prime = $prime;
 
         return $this;
     }
