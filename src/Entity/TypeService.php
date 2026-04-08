@@ -2,28 +2,34 @@
 
 namespace App\Entity;
 
-use App\Repository\TypeServiceRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+use App\Repository\TypeServiceRepository;
+
 #[ORM\Entity(repositoryClass: TypeServiceRepository::class)]
+#[ORM\Table(name: "type_service")]
 class TypeService
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-    #[ORM\Column(type: 'string', length: 100)]
+#[ORM\Id]
+#[ORM\GeneratedValue]
+#[ORM\Column]
+private ?int $id = null;
+
+    #[ORM\Column(nullable: false)]
     private string $nom;
-    #[ORM\Column(type: 'string', length: 100)]
+
+    #[ORM\Column(nullable: false)]
     private string $categorie;
-    #[ORM\Column(type: 'text', nullable: true)]
+
+    #[ORM\Column(nullable: true)]
     private ?string $description = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function getNom(): string
+
+    public function getNom(): ?string
     {
         return $this->nom;
     }
@@ -34,7 +40,8 @@ class TypeService
 
         return $this;
     }
-    public function getCategorie(): string
+
+    public function getCategorie(): ?string
     {
         return $this->categorie;
     }
@@ -45,6 +52,7 @@ class TypeService
 
         return $this;
     }
+
     public function getDescription(): ?string
     {
         return $this->description;

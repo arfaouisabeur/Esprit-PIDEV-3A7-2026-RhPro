@@ -2,75 +2,60 @@
 
 namespace App\Entity;
 
-use App\Repository\PrimeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\PrimeRepository;
 
 #[ORM\Entity(repositoryClass: PrimeRepository::class)]
 class Prime
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column(type: 'bigint')]
-    private int $rhId;
-    #[ORM\Column(type: 'bigint')]
-    private int $employeId;
-    #[ORM\Column(type: 'decimal')]
-    private float $montant;
-    #[ORM\Column(type: 'date')]
-    private \DateTimeInterface $dateAttribution;
-    #[ORM\Column(type: 'text', nullable: true)]
+
+    #[ORM\Column(nullable: false)]
+    private string $montant;
+
+    #[ORM\Column(nullable: false)]
+    private string $date_attribution;
+
+    #[ORM\Column(nullable: true)]
     private ?string $description = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "contract_id", referencedColumnName: "id")]
+    private ?Contract $contract = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function getRhid(): int
-    {
-        return $this->rhId;
-    }
 
-    public function setRhid(int $rhId): static
-    {
-        $this->rhId = $rhId;
-
-        return $this;
-    }
-    public function getEmployeid(): int
-    {
-        return $this->employeId;
-    }
-
-    public function setEmployeid(int $employeId): static
-    {
-        $this->employeId = $employeId;
-
-        return $this;
-    }
-    public function getMontant(): float
+    public function getMontant(): ?string
     {
         return $this->montant;
     }
 
-    public function setMontant(float $montant): static
+    public function setMontant(string $montant): static
     {
         $this->montant = $montant;
 
         return $this;
     }
-    public function getDateattribution(): \DateTimeInterface
+
+    public function getDateAttribution(): ?string
     {
-        return $this->dateAttribution;
+        return $this->date_attribution;
     }
 
-    public function setDateattribution(\DateTimeInterface $dateAttribution): static
+    public function setDateAttribution(string $date_attribution): static
     {
-        $this->dateAttribution = $dateAttribution;
+        $this->date_attribution = $date_attribution;
 
         return $this;
     }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -79,6 +64,18 @@ class Prime
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getContract(): ?Contract
+    {
+        return $this->contract;
+    }
+
+    public function setContract(?Contract $contract): static
+    {
+        $this->contract = $contract;
 
         return $this;
     }

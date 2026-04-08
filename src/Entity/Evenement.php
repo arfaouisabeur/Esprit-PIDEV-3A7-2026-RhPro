@@ -2,51 +2,53 @@
 
 namespace App\Entity;
 
-use App\Repository\EvenementRepository;
 use Doctrine\ORM\Mapping as ORM;
+
+use App\Repository\EvenementRepository;
 
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
 class Evenement
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column(type: 'bigint')]
-    private int $rhId;
-    #[ORM\Column(type: 'string', length: 200)]
+
+    #[ORM\Column(nullable: false)]
     private string $titre;
-    #[ORM\Column(type: 'datetime')]
-    private \DateTimeInterface $dateDebut;
-    #[ORM\Column(type: 'datetime')]
-    private \DateTimeInterface $dateFin;
-    #[ORM\Column(type: 'string', length: 200)]
+
+    #[ORM\Column(nullable: false)]
+    private string $date_debut;
+
+    #[ORM\Column(nullable: false)]
+    private string $date_fin;
+
+    #[ORM\Column(nullable: false)]
     private string $lieu;
-    #[ORM\Column(type: 'text', nullable: true)]
+
+    #[ORM\Column(nullable: true)]
     private ?string $description = null;
-    #[ORM\Column(type: 'string', length: 500, nullable: true)]
-    private ?string $imageUrl = null;
-    #[ORM\Column(type: 'float', nullable: true)]
-    private ?float $latitude = null;
-    #[ORM\Column(type: 'float', nullable: true)]
-    private ?float $longitude = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "rh_id", referencedColumnName: "user_id")]
+    private ?Rh $rh = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $image_url = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $latitude = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $longitude = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function getRhid(): int
-    {
-        return $this->rhId;
-    }
 
-    public function setRhid(int $rhId): static
-    {
-        $this->rhId = $rhId;
-
-        return $this;
-    }
-    public function getTitre(): string
+    public function getTitre(): ?string
     {
         return $this->titre;
     }
@@ -57,29 +59,32 @@ class Evenement
 
         return $this;
     }
-    public function getDatedebut(): \DateTimeInterface
+
+    public function getDateDebut(): ?string
     {
-        return $this->dateDebut;
+        return $this->date_debut;
     }
 
-    public function setDatedebut(\DateTimeInterface $dateDebut): static
+    public function setDateDebut(string $date_debut): static
     {
-        $this->dateDebut = $dateDebut;
-
-        return $this;
-    }
-    public function getDatefin(): \DateTimeInterface
-    {
-        return $this->dateFin;
-    }
-
-    public function setDatefin(\DateTimeInterface $dateFin): static
-    {
-        $this->dateFin = $dateFin;
+        $this->date_debut = $date_debut;
 
         return $this;
     }
-    public function getLieu(): string
+
+    public function getDateFin(): ?string
+    {
+        return $this->date_fin;
+    }
+
+    public function setDateFin(string $date_fin): static
+    {
+        $this->date_fin = $date_fin;
+
+        return $this;
+    }
+
+    public function getLieu(): ?string
     {
         return $this->lieu;
     }
@@ -90,6 +95,7 @@ class Evenement
 
         return $this;
     }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -101,36 +107,51 @@ class Evenement
 
         return $this;
     }
-    public function getImageurl(): ?string
+
+    public function getImageUrl(): ?string
     {
-        return $this->imageUrl;
+        return $this->image_url;
     }
 
-    public function setImageurl(?string $imageUrl): static
+    public function setImageUrl(?string $image_url): static
     {
-        $this->imageUrl = $imageUrl;
+        $this->image_url = $image_url;
 
         return $this;
     }
-    public function getLatitude(): ?float
+
+    public function getLatitude(): ?string
     {
         return $this->latitude;
     }
 
-    public function setLatitude(?float $latitude): static
+    public function setLatitude(?string $latitude): static
     {
         $this->latitude = $latitude;
 
         return $this;
     }
-    public function getLongitude(): ?float
+
+    public function getLongitude(): ?string
     {
         return $this->longitude;
     }
 
-    public function setLongitude(?float $longitude): static
+    public function setLongitude(?string $longitude): static
     {
         $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getRh(): ?Rh
+    {
+        return $this->rh;
+    }
+
+    public function setRh(?Rh $rh): static
+    {
+        $this->rh = $rh;
 
         return $this;
     }

@@ -2,124 +2,68 @@
 
 namespace App\Entity;
 
-use App\Repository\CongeTtRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CongeTtRepository;
 
 #[ORM\Entity(repositoryClass: CongeTtRepository::class)]
+#[ORM\Table(name: "conge_tt")]
 class CongeTt
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column(type: 'bigint')]
-    private int $employeId;
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $typeConge;
-    #[ORM\Column(type: 'date')]
-    private \DateTimeInterface $dateDebut;
-    #[ORM\Column(type: 'date')]
-    private \DateTimeInterface $dateFin;
-    #[ORM\Column(type: 'string', length: 255)]
+
+    #[ORM\Column(length: 50)]
+    private string $type_conge;
+
+    #[ORM\Column(type: "date")]
+    private \DateTimeInterface $date_debut;
+
+    #[ORM\Column(type: "date")]
+    private \DateTimeInterface $date_fin;
+
+    #[ORM\Column(length: 50)]
     private string $statut;
-    #[ORM\Column(type: 'text', nullable: true)]
+
+    #[ORM\Column(nullable: true)]
     private ?string $description = null;
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $documentPath = null;
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $ocrVerified = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-    public function getEmployeid(): int
-    {
-        return $this->employeId;
-    }
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "employe_id", referencedColumnName: "user_id", nullable: false)]
+    private ?Employe $employe = null;
 
-    public function setEmployeid(int $employeId): static
-    {
-        $this->employeId = $employeId;
+    #[ORM\Column(nullable: true)]
+    private ?string $document_path = null;
 
-        return $this;
-    }
-    public function getTypeconge(): string
-    {
-        return $this->typeConge;
-    }
+    #[ORM\Column(type: "boolean", nullable: true)]
+    private ?bool $ocr_verified = null;
 
-    public function setTypeconge(string $typeConge): static
-    {
-        $this->typeConge = $typeConge;
+    // ===== GETTERS & SETTERS =====
 
-        return $this;
-    }
-    public function getDatedebut(): \DateTimeInterface
-    {
-        return $this->dateDebut;
-    }
+    public function getId(): ?int { return $this->id; }
 
-    public function setDatedebut(\DateTimeInterface $dateDebut): static
-    {
-        $this->dateDebut = $dateDebut;
+    public function getTypeConge(): ?string { return $this->type_conge; }
+    public function setTypeConge(string $type_conge): static { $this->type_conge = $type_conge; return $this; }
 
-        return $this;
-    }
-    public function getDatefin(): \DateTimeInterface
-    {
-        return $this->dateFin;
-    }
+    public function getDateDebut(): ?\DateTimeInterface { return $this->date_debut; }
+    public function setDateDebut(\DateTimeInterface $date_debut): static { $this->date_debut = $date_debut; return $this; }
 
-    public function setDatefin(\DateTimeInterface $dateFin): static
-    {
-        $this->dateFin = $dateFin;
+    public function getDateFin(): ?\DateTimeInterface { return $this->date_fin; }
+    public function setDateFin(\DateTimeInterface $date_fin): static { $this->date_fin = $date_fin; return $this; }
 
-        return $this;
-    }
-    public function getStatut(): string
-    {
-        return $this->statut;
-    }
+    public function getStatut(): ?string { return $this->statut; }
+    public function setStatut(string $statut): static { $this->statut = $statut; return $this; }
 
-    public function setStatut(string $statut): static
-    {
-        $this->statut = $statut;
+    public function getDescription(): ?string { return $this->description; }
+    public function setDescription(?string $description): static { $this->description = $description; return $this; }
 
-        return $this;
-    }
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
+    public function getEmploye(): ?Employe { return $this->employe; }
+    public function setEmploye(Employe $employe): static { $this->employe = $employe; return $this; }
 
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
+    public function getDocumentPath(): ?string { return $this->document_path; }
+    public function setDocumentPath(?string $document_path): static { $this->document_path = $document_path; return $this; }
 
-        return $this;
-    }
-    public function getDocumentpath(): ?string
-    {
-        return $this->documentPath;
-    }
-
-    public function setDocumentpath(?string $documentPath): static
-    {
-        $this->documentPath = $documentPath;
-
-        return $this;
-    }
-    public function getOcrverified(): ?bool
-    {
-        return $this->ocrVerified;
-    }
-
-    public function setOcrverified(?bool $ocrVerified): static
-    {
-        $this->ocrVerified = $ocrVerified;
-
-        return $this;
-    }
-
+    public function getOcrVerified(): ?bool { return $this->ocr_verified; }
+    public function setOcrVerified(?bool $ocr_verified): static { $this->ocr_verified = $ocr_verified; return $this; }
 }

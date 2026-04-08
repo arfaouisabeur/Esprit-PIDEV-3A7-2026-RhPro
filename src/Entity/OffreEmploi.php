@@ -2,38 +2,51 @@
 
 namespace App\Entity;
 
-use App\Repository\OffreEmploiRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+use App\Repository\OffreEmploiRepository;
+
 #[ORM\Entity(repositoryClass: OffreEmploiRepository::class)]
+#[ORM\Table(name: "offre_emploi")]
 class OffreEmploi
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column(type: 'string', length: 200)]
+
+    #[ORM\Column(nullable: false)]
     private string $titre;
-    #[ORM\Column(type: 'text')]
+
+    #[ORM\Column(nullable: false)]
     private string $description;
-    #[ORM\Column(type: 'string', length: 200)]
+
+    #[ORM\Column(nullable: false)]
     private string $localisation;
-    #[ORM\Column(type: 'string', length: 80)]
-    private string $typeContrat;
-    #[ORM\Column(type: 'date')]
-    private \DateTimeInterface $datePublication;
-    #[ORM\Column(type: 'date')]
-    private \DateTimeInterface $dateExpiration;
-    #[ORM\Column(type: 'string', length: 20)]
+
+    #[ORM\Column(nullable: false)]
+    private string $type_contrat;
+
+    #[ORM\Column(nullable: false)]
+    private string $date_publication;
+
+    #[ORM\Column(nullable: false)]
+    private string $date_expiration;
+
+    #[ORM\Column(nullable: false)]
     private string $statut;
-    #[ORM\Column(type: 'bigint')]
-    private int $rhId;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "rh_id", referencedColumnName: "user_id")]
+    private ?Rh $rh = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function getTitre(): string
+
+    public function getTitre(): ?string
     {
         return $this->titre;
     }
@@ -44,7 +57,8 @@ class OffreEmploi
 
         return $this;
     }
-    public function getDescription(): string
+
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -55,7 +69,8 @@ class OffreEmploi
 
         return $this;
     }
-    public function getLocalisation(): string
+
+    public function getLocalisation(): ?string
     {
         return $this->localisation;
     }
@@ -66,40 +81,44 @@ class OffreEmploi
 
         return $this;
     }
-    public function getTypecontrat(): string
+
+    public function getTypeContrat(): ?string
     {
-        return $this->typeContrat;
+        return $this->type_contrat;
     }
 
-    public function setTypecontrat(string $typeContrat): static
+    public function setTypeContrat(string $type_contrat): static
     {
-        $this->typeContrat = $typeContrat;
-
-        return $this;
-    }
-    public function getDatepublication(): \DateTimeInterface
-    {
-        return $this->datePublication;
-    }
-
-    public function setDatepublication(\DateTimeInterface $datePublication): static
-    {
-        $this->datePublication = $datePublication;
+        $this->type_contrat = $type_contrat;
 
         return $this;
     }
-    public function getDateexpiration(): \DateTimeInterface
+
+    public function getDatePublication(): ?string
     {
-        return $this->dateExpiration;
+        return $this->date_publication;
     }
 
-    public function setDateexpiration(\DateTimeInterface $dateExpiration): static
+    public function setDatePublication(string $date_publication): static
     {
-        $this->dateExpiration = $dateExpiration;
+        $this->date_publication = $date_publication;
 
         return $this;
     }
-    public function getStatut(): string
+
+    public function getDateExpiration(): ?string
+    {
+        return $this->date_expiration;
+    }
+
+    public function setDateExpiration(string $date_expiration): static
+    {
+        $this->date_expiration = $date_expiration;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
     {
         return $this->statut;
     }
@@ -110,14 +129,15 @@ class OffreEmploi
 
         return $this;
     }
-    public function getRhid(): int
+
+    public function getRh(): ?Rh
     {
-        return $this->rhId;
+        return $this->rh;
     }
 
-    public function setRhid(int $rhId): static
+    public function setRh(?Rh $rh): static
     {
-        $this->rhId = $rhId;
+        $this->rh = $rh;
 
         return $this;
     }

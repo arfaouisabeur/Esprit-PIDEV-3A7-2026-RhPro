@@ -2,41 +2,51 @@
 
 namespace App\Entity;
 
-use App\Repository\EventParticipationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+use App\Repository\EventParticipationRepository;
 #[ORM\Entity(repositoryClass: EventParticipationRepository::class)]
+#[ORM\Table(name: "event_participation")]
 class EventParticipation
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column(type: 'date')]
-    private \DateTimeInterface $dateInscription;
-    #[ORM\Column(type: 'string', length: 60)]
+
+    #[ORM\Column(nullable: false)]
+    private string $date_inscription;
+
+    #[ORM\Column(nullable: false)]
     private string $statut;
-    #[ORM\Column(type: 'bigint')]
-    private int $evenementId;
-    #[ORM\Column(type: 'bigint')]
-    private int $employeId;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "evenement_id", referencedColumnName: "id")]
+    private ?Evenement $evenement = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "employe_id", referencedColumnName: "user_id")]
+    private ?Employe $employe = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function getDateinscription(): \DateTimeInterface
+
+    public function getDateInscription(): ?string
     {
-        return $this->dateInscription;
+        return $this->date_inscription;
     }
 
-    public function setDateinscription(\DateTimeInterface $dateInscription): static
+    public function setDateInscription(string $date_inscription): static
     {
-        $this->dateInscription = $dateInscription;
+        $this->date_inscription = $date_inscription;
 
         return $this;
     }
-    public function getStatut(): string
+
+    public function getStatut(): ?string
     {
         return $this->statut;
     }
@@ -47,25 +57,27 @@ class EventParticipation
 
         return $this;
     }
-    public function getEvenementid(): int
+
+    public function getEvenement(): ?Evenement
     {
-        return $this->evenementId;
+        return $this->evenement;
     }
 
-    public function setEvenementid(int $evenementId): static
+    public function setEvenement(?Evenement $evenement): static
     {
-        $this->evenementId = $evenementId;
+        $this->evenement = $evenement;
 
         return $this;
     }
-    public function getEmployeid(): int
+
+    public function getEmploye(): ?Employe
     {
-        return $this->employeId;
+        return $this->employe;
     }
 
-    public function setEmployeid(int $employeId): static
+    public function setEmploye(?Employe $employe): static
     {
-        $this->employeId = $employeId;
+        $this->employe = $employe;
 
         return $this;
     }

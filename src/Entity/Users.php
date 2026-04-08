@@ -2,38 +2,51 @@
 
 namespace App\Entity;
 
-use App\Repository\UsersRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UsersRepository;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
 class Users
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column(type: 'string', length: 120)]
+
+    #[ORM\Column(nullable: false)]
     private string $nom;
-    #[ORM\Column(type: 'string', length: 120)]
+
+    #[ORM\Column(nullable: false)]
     private string $prenom;
-    #[ORM\Column(type: 'string', length: 255)]
+
+    #[ORM\Column(nullable: false)]
     private string $email;
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $motDePasse;
-    #[ORM\Column(type: 'string', length: 40, nullable: true)]
+
+    #[ORM\Column(nullable: false)]
+    private string $mot_de_passe;
+
+    #[ORM\Column(nullable: true)]
     private ?string $telephone = null;
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+
+    #[ORM\Column(nullable: true)]
     private ?string $adresse = null;
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+
+    #[ORM\Column(nullable: true)]
     private ?string $role = null;
-    #[ORM\Column(type: 'string', length: 500, nullable: true)]
-    private ?string $avatarPath = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $avatar_path = null;
+
+    #[ORM\Column(nullable: false)]
+    private string $statut;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function getNom(): string
+
+    public function getNom(): ?string
     {
         return $this->nom;
     }
@@ -44,7 +57,8 @@ class Users
 
         return $this;
     }
-    public function getPrenom(): string
+
+    public function getPrenom(): ?string
     {
         return $this->prenom;
     }
@@ -55,7 +69,8 @@ class Users
 
         return $this;
     }
-    public function getEmail(): string
+
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -66,17 +81,19 @@ class Users
 
         return $this;
     }
-    public function getMotdepasse(): string
+
+    public function getMotDePasse(): ?string
     {
-        return $this->motDePasse;
+        return $this->mot_de_passe;
     }
 
-    public function setMotdepasse(string $motDePasse): static
+    public function setMotDePasse(string $mot_de_passe): static
     {
-        $this->motDePasse = $motDePasse;
+        $this->mot_de_passe = $mot_de_passe;
 
         return $this;
     }
+
     public function getTelephone(): ?string
     {
         return $this->telephone;
@@ -88,6 +105,7 @@ class Users
 
         return $this;
     }
+
     public function getAdresse(): ?string
     {
         return $this->adresse;
@@ -99,6 +117,7 @@ class Users
 
         return $this;
     }
+
     public function getRole(): ?string
     {
         return $this->role;
@@ -110,14 +129,27 @@ class Users
 
         return $this;
     }
-    public function getAvatarpath(): ?string
+
+    public function getAvatarPath(): ?string
     {
-        return $this->avatarPath;
+        return $this->avatar_path;
     }
 
-    public function setAvatarpath(?string $avatarPath): static
+    public function setAvatarPath(?string $avatar_path): static
     {
-        $this->avatarPath = $avatarPath;
+        $this->avatar_path = $avatar_path;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): static
+    {
+        $this->statut = $statut;
 
         return $this;
     }

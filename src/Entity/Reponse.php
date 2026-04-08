@@ -2,34 +2,46 @@
 
 namespace App\Entity;
 
-use App\Repository\ReponseRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ReponseRepository;
 
 #[ORM\Entity(repositoryClass: ReponseRepository::class)]
 class Reponse
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column(type: 'string', length: 60)]
+
+    #[ORM\Column(nullable: false)]
     private string $decision;
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+
+    #[ORM\Column(nullable: true)]
     private ?string $commentaire = null;
-    #[ORM\Column(type: 'bigint')]
-    private int $rhId;
-    #[ORM\Column(type: 'bigint')]
-    private int $employeId;
-    #[ORM\Column(type: 'bigint', nullable: true)]
-    private ?int $congeTtId = null;
-    #[ORM\Column(type: 'bigint', nullable: true)]
-    private ?int $demandeServiceId = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "rh_id", referencedColumnName: "user_id")]
+    private ?Rh $rh = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "employe_id", referencedColumnName: "user_id")]
+    private ?Employe $employe = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "conge_tt_id", referencedColumnName: "id")]
+    private ?CongeTt $conge_tt = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "demande_service_id", referencedColumnName: "id")]
+    private ?DemandeService $demande_service = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function getDecision(): string
+
+    public function getDecision(): ?string
     {
         return $this->decision;
     }
@@ -40,6 +52,7 @@ class Reponse
 
         return $this;
     }
+
     public function getCommentaire(): ?string
     {
         return $this->commentaire;
@@ -51,47 +64,51 @@ class Reponse
 
         return $this;
     }
-    public function getRhid(): int
+
+    public function getRh(): ?Rh
     {
-        return $this->rhId;
+        return $this->rh;
     }
 
-    public function setRhid(int $rhId): static
+    public function setRh(?Rh $rh): static
     {
-        $this->rhId = $rhId;
-
-        return $this;
-    }
-    public function getEmployeid(): int
-    {
-        return $this->employeId;
-    }
-
-    public function setEmployeid(int $employeId): static
-    {
-        $this->employeId = $employeId;
+        $this->rh = $rh;
 
         return $this;
     }
-    public function getCongettid(): ?int
+
+    public function getEmploye(): ?Employe
     {
-        return $this->congeTtId;
+        return $this->employe;
     }
 
-    public function setCongettid(?int $congeTtId): static
+    public function setEmploye(?Employe $employe): static
     {
-        $this->congeTtId = $congeTtId;
+        $this->employe = $employe;
 
         return $this;
     }
-    public function getDemandeserviceid(): ?int
+
+    public function getCongeTt(): ?CongeTt
     {
-        return $this->demandeServiceId;
+        return $this->conge_tt;
     }
 
-    public function setDemandeserviceid(?int $demandeServiceId): static
+    public function setCongeTt(?CongeTt $conge_tt): static
     {
-        $this->demandeServiceId = $demandeServiceId;
+        $this->conge_tt = $conge_tt;
+
+        return $this;
+    }
+
+    public function getDemandeService(): ?DemandeService
+    {
+        return $this->demande_service;
+    }
+
+    public function setDemandeService(?DemandeService $demande_service): static
+    {
+        $this->demande_service = $demande_service;
 
         return $this;
     }

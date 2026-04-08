@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}TypeService index{% endblock %}
+
+{% block body %}
+    <h1>TypeService index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Categorie</th>
+                <th>Description</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for type_service in type_services %}
+            <tr>
+                <td>{{ type_service.id }}</td>
+                <td>{{ type_service.nom }}</td>
+                <td>{{ type_service.categorie }}</td>
+                <td>{{ type_service.description }}</td>
+                <td>
+                    <a href="{{ path('app_type_service_show', {'id': type_service.id}) }}">show</a>
+                    <a href="{{ path('app_type_service_edit', {'id': type_service.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_type_service_new') }}">Create new</a>
+{% endblock %}

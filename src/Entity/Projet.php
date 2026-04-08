@@ -2,58 +2,47 @@
 
 namespace App\Entity;
 
-use App\Repository\ProjetRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ProjetRepository;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
 class Projet
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column(type: 'bigint')]
-    private int $rhId;
-    #[ORM\Column(type: 'bigint')]
-    private int $responsableEmployeId;
-    #[ORM\Column(type: 'string', length: 200)]
+
+    #[ORM\Column(nullable: false)]
     private string $titre;
-    #[ORM\Column(type: 'string', length: 10)]
+
+    #[ORM\Column(nullable: false)]
     private string $statut;
-    #[ORM\Column(type: 'text', nullable: true)]
+
+    #[ORM\Column(nullable: true)]
     private ?string $description = null;
-    #[ORM\Column(type: 'date')]
-    private \DateTimeInterface $dateDebut;
-    #[ORM\Column(type: 'date')]
-    private \DateTimeInterface $dateFin;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "rh_id", referencedColumnName: "user_id")]
+    private ?Rh $rh = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "responsable_employe_id", referencedColumnName: "user_id")]
+    private ?Employe $responsable_employe = null;
+
+    #[ORM\Column(nullable: false)]
+    private string $date_debut;
+
+    #[ORM\Column(nullable: false)]
+    private string $date_fin;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function getRhid(): int
-    {
-        return $this->rhId;
-    }
 
-    public function setRhid(int $rhId): static
-    {
-        $this->rhId = $rhId;
-
-        return $this;
-    }
-    public function getResponsableemployeid(): int
-    {
-        return $this->responsableEmployeId;
-    }
-
-    public function setResponsableemployeid(int $responsableEmployeId): static
-    {
-        $this->responsableEmployeId = $responsableEmployeId;
-
-        return $this;
-    }
-    public function getTitre(): string
+    public function getTitre(): ?string
     {
         return $this->titre;
     }
@@ -64,7 +53,8 @@ class Projet
 
         return $this;
     }
-    public function getStatut(): string
+
+    public function getStatut(): ?string
     {
         return $this->statut;
     }
@@ -75,6 +65,7 @@ class Projet
 
         return $this;
     }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -86,25 +77,51 @@ class Projet
 
         return $this;
     }
-    public function getDatedebut(): \DateTimeInterface
+
+    public function getDateDebut(): ?string
     {
-        return $this->dateDebut;
+        return $this->date_debut;
     }
 
-    public function setDatedebut(\DateTimeInterface $dateDebut): static
+    public function setDateDebut(string $date_debut): static
     {
-        $this->dateDebut = $dateDebut;
+        $this->date_debut = $date_debut;
 
         return $this;
     }
-    public function getDatefin(): \DateTimeInterface
+
+    public function getDateFin(): ?string
     {
-        return $this->dateFin;
+        return $this->date_fin;
     }
 
-    public function setDatefin(\DateTimeInterface $dateFin): static
+    public function setDateFin(string $date_fin): static
     {
-        $this->dateFin = $dateFin;
+        $this->date_fin = $date_fin;
+
+        return $this;
+    }
+
+    public function getRh(): ?Rh
+    {
+        return $this->rh;
+    }
+
+    public function setRh(?Rh $rh): static
+    {
+        $this->rh = $rh;
+
+        return $this;
+    }
+
+    public function getResponsableEmploye(): ?Employe
+    {
+        return $this->responsable_employe;
+    }
+
+    public function setResponsableEmploye(?Employe $responsable_employe): static
+    {
+        $this->responsable_employe = $responsable_employe;
 
         return $this;
     }

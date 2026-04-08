@@ -9,26 +9,35 @@ use Doctrine\ORM\Mapping as ORM;
 class Employe
 {
     #[ORM\Id]
-    #[ORM\Column(name: 'user_id', type: 'bigint')]
-    private ?int $userId = null;
+    #[ORM\OneToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false)]
+    private ?Users $user = null;
 
-    #[ORM\Column(type: 'string', length: 60)]
-    private ?string $matricule = null;
+    #[ORM\Column(length: 60)]
+    private string $matricule;
 
-    #[ORM\Column(type: 'string', length: 120)]
-    private ?string $position = null;
+    #[ORM\Column(length: 120)]
+    private string $position;
 
-    #[ORM\Column(name: 'date_embauche', type: 'date')]
-    private ?\DateTimeInterface $dateEmbauche = null;
+    #[ORM\Column(type: "date")]
+    private \DateTimeInterface $date_embauche;
 
-    public function getUserId(): ?int
+    // 🔥 CRITICAL FIX
+    public function getId(): ?int
     {
-        return $this->userId;
+        return $this->user?->getId();
     }
 
-    public function setUserId(int $userId): static
+    // ===== GETTERS & SETTERS =====
+
+    public function getUser(): ?Users
     {
-        $this->userId = $userId;
+        return $this->user;
+    }
+
+    public function setUser(Users $user): static
+    {
+        $this->user = $user;
         return $this;
     }
 
@@ -56,12 +65,12 @@ class Employe
 
     public function getDateEmbauche(): ?\DateTimeInterface
     {
-        return $this->dateEmbauche;
+        return $this->date_embauche;
     }
 
-    public function setDateEmbauche(\DateTimeInterface $dateEmbauche): static
+    public function setDateEmbauche(\DateTimeInterface $date_embauche): static
     {
-        $this->dateEmbauche = $dateEmbauche;
+        $this->date_embauche = $date_embauche;
         return $this;
     }
 }
