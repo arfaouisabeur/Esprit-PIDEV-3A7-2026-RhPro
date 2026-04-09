@@ -28,7 +28,6 @@
     box-shadow: 0 4px 32px rgba(0,0,0,0.3);
   }
 
-  /* Gold top line */
   .rh-navbar::before {
     content: '';
     position: absolute;
@@ -45,7 +44,6 @@
     gap: 0;
   }
 
-  /* ── BRAND ── */
   .nav-brand {
     display: flex;
     align-items: center;
@@ -71,7 +69,6 @@
     letter-spacing: -0.01em;
   }
 
-  /* ── MAIN LINKS ── */
   .nav-links {
     display: flex;
     align-items: center;
@@ -108,7 +105,6 @@
   .nav-links .nav-link:hover svg,
   .nav-links .nav-link.active svg { opacity: 1; }
 
-  /* Gold underline on active */
   .nav-links .nav-link.active::after {
     content: '';
     position: absolute;
@@ -118,7 +114,6 @@
     border-radius: 1px;
   }
 
-  /* ── DROPDOWN ── */
   .nav-dropdown { position: relative; }
 
   .nav-dropdown-toggle {
@@ -153,7 +148,6 @@
   .nav-dropdown:hover .chevron,
   .nav-dropdown.open .chevron { transform: rotate(180deg); }
 
-  /* Dropdown menu */
   .nav-dropdown-menu {
     position: absolute;
     top: calc(100% + 4px);
@@ -169,10 +163,8 @@
     pointer-events: none;
     transition: opacity 0.18s, transform 0.18s;
     z-index: 100;
-    /* invisible bridge fills the gap between trigger and menu */
   }
 
-  /* Invisible hover bridge so mouse can travel from trigger to menu */
   .nav-dropdown-menu::after {
     content: '';
     position: absolute;
@@ -188,11 +180,10 @@
     transform: translateX(-50%) translateY(0);
   }
 
-  /* Tiny arrow */
   .nav-dropdown-menu::before {
     content: '';
     position: absolute;
-    top: -5px; left: 50%; 
+    top: -5px; left: 50%;
     width: 10px; height: 10px;
     background: #1e0d35;
     border-left: 1px solid rgba(255,255,255,0.1);
@@ -246,7 +237,6 @@
     margin: 6px 4px;
   }
 
-  /* ── RIGHT ACTIONS ── */
   .nav-actions {
     display: flex;
     align-items: center;
@@ -302,7 +292,6 @@
     color: #1a0a2e;
   }
 
-  /* Inscription dropdown button */
   .btn-nav-gold-dropdown {
     display: inline-flex;
     align-items: center;
@@ -326,7 +315,6 @@
     box-shadow: 0 8px 20px rgba(143, 76, 201, 0.4);
   }
 
-  /* User avatar pill */
   .user-pill {
     display: flex;
     align-items: center;
@@ -369,7 +357,6 @@
   .user-pill .chevron { opacity: 0.5; transition: transform 0.2s; }
   .nav-dropdown:hover .user-pill .chevron { transform: rotate(180deg); }
 
-  /* ── MOBILE TOGGLE ── */
   .nav-toggle {
     display: none;
     background: none;
@@ -384,7 +371,6 @@
 
   .nav-toggle:hover { background: rgba(255,255,255,0.07); }
 
-  /* ── MOBILE DRAWER ── */
   .nav-mobile {
     display: none;
     flex-direction: column;
@@ -426,7 +412,6 @@
     padding-top: 8px;
   }
 
-  /* ── RESPONSIVE ── */
   @media (max-width: 1024px) {
     .nav-links { display: none; }
     .nav-actions { display: none; }
@@ -471,9 +456,9 @@
         </a>
       </li>
 
-      <!-- Congé -->
+      <!-- ═══ LIEN CONGÉ — pointe vers la LISTE (index) pour tous les rôles ═══ -->
       <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{{ path('app_conge_tt_index') }}">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           Congé
         </a>
@@ -487,20 +472,37 @@
           <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="nav-dropdown-menu">
-          <a href="#" class="dropdown-item-rh">
-            <div class="di-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-            Mes demandes
-          </a>
-          <a href="#" class="dropdown-item-rh">
-            <div class="di-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
-            Catalogue de services
-          </a>
-          <a href="#" class="dropdown-item-rh">
-            <div class="di-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-            Suivi en temps réel
-          </a>
+
+          {% if is_granted('ROLE_RH') %}
+            {# ── VUE RH : toutes les demandes + gestion des types ── #}
+            <a href="{{ path('app_demande_service_index') }}" class="dropdown-item-rh">
+              <div class="di-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+              Toutes les demandes
+            </a>
+            <div class="dropdown-sep"></div>
+            <a href="{{ path('app_type_service_index') }}" class="dropdown-item-rh">
+              <div class="di-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+              Gérer les types de service
+            </a>
+            <a href="{{ path('app_type_service_new') }}" class="dropdown-item-rh">
+              <div class="di-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+              Nouveau type de service
+            </a>
+          {% else %}
+            {# ── VUE EMPLOYÉ : créer et suivre ses demandes uniquement ── #}
+            <a href="{{ path('app_demande_service_new') }}" class="dropdown-item-rh">
+              <div class="di-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              Nouvelle demande
+            </a>
+            <a href="{{ path('app_demande_service_index') }}" class="dropdown-item-rh">
+              <div class="di-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+              Mes demandes
+            </a>
+          {% endif %}
+
         </div>
       </li>
+
 
       <!-- Projets -->
       <li class="nav-item">
@@ -557,6 +559,11 @@
               <a class="dropdown-item-rh" href="{{ path('app_rh_dashboard') }}">
                 <div class="di-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
                 Dashboard RH
+              </a>
+              <!-- Lien rapide Gestion Congés pour le RH dans le dropdown -->
+              <a class="dropdown-item-rh" href="{{ path('app_conge_tt_index') }}">
+                <div class="di-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+                Gestion des congés
               </a>
             {% elseif app.user.isCandidat() %}
               <a class="dropdown-item-rh" href="{{ path('app_candidat_profile') }}">
@@ -632,11 +639,12 @@
 
     <div class="nav-mobile-section">Gestion</div>
 
-    <a class="nav-link" href="#">
+    <!-- Congé mobile — pointe vers la liste pour tous -->
+    <a class="nav-link" href="{{ path('app_conge_tt_index') }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Congé
     </a>
-    <a class="nav-link" href="#">
+    <a class="nav-link" href="{{ path('app_demande_service_new') }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
       Services
     </a>
@@ -661,6 +669,7 @@
 
     {% if app.user.isRH() %}
       <a class="nav-link" href="{{ path('app_rh_dashboard') }}">Dashboard RH</a>
+      <a class="nav-link" href="{{ path('app_conge_tt_index') }}">Gestion des congés</a>
     {% elseif app.user.isCandidat() %}
       <a class="nav-link" href="{{ path('app_candidat_profile') }}">Mon Profil</a>
     {% elseif app.user.isEmploye() %}
