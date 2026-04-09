@@ -14,29 +14,22 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ReponseType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
-        $builder
-            ->add('decision')
-            ->add('commentaire')
-            ->add('rh', EntityType::class, [
-                'class' => Rh::class,
-                'choice_label' => 'id',
-            ])
-            ->add('employe', EntityType::class, [
-                'class' => Employe::class,
-                'choice_label' => 'id',
-            ])
-            ->add('conge_tt', EntityType::class, [
-                'class' => CongeTt::class,
-                'choice_label' => 'id',
-            ])
-            ->add('demande_service', EntityType::class, [
-                'class' => DemandeService::class,
-                'choice_label' => 'id',
-            ])
-        ;
-    }
+public function buildForm(FormBuilderInterface $builder, array $options): void
+{
+    $builder
+        ->add('decision', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            'choices' => [
+                'Approuver' => 'approuvé',
+                'Refuser'   => 'refusé',
+            ],
+            'label' => 'Décision',
+        ])
+        ->add('commentaire', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'required' => false,
+            'label' => 'Commentaire (optionnel)',
+        ])
+    ;
+}
 
     public function configureOptions(OptionsResolver $resolver): void
     {

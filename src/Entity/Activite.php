@@ -19,7 +19,7 @@ class Activite
     #[ORM\Column(nullable: true)]
     private ?string $description = null;
 
-    #[ORM\ManyToOne(inversedBy: 'activites', targetEntity: Evenement::class)]
+    #[ORM\ManyToOne(targetEntity: Evenement::class)]
     #[ORM\JoinColumn(name: "evenement_id", referencedColumnName: "id", nullable: false)]
     private ?Evenement $evenement = null;
 

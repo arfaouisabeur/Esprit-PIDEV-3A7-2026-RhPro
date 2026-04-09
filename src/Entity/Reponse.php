@@ -29,11 +29,11 @@ class Reponse
     private ?Employe $employe = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(name: "conge_tt_id", referencedColumnName: "id")]
+    #[ORM\JoinColumn(name: "conge_tt_id", referencedColumnName: "id", onDelete: "CASCADE")]
     private ?CongeTt $conge_tt = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(name: "demande_service_id", referencedColumnName: "id")]
+    #[ORM\JoinColumn(name: "demande_service_id", referencedColumnName: "id", onDelete: "CASCADE")]
     private ?DemandeService $demande_service = null;
 
     public function getId(): ?int

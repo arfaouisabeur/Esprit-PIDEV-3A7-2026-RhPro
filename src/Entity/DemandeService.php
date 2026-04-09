@@ -50,8 +50,8 @@ class DemandeService
     #[ORM\Column(nullable: true)]
     private ?string $pdf_path = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(name: "type", referencedColumnName: "id")]
+    #[ORM\ManyToOne(inversedBy: 'demandeServices')]
+    #[ORM\JoinColumn(name: "type", referencedColumnName: "id", onDelete: "CASCADE")]
     private ?TypeService $type = null;
 
     public function getId(): ?int
