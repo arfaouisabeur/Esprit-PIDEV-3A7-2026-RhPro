@@ -6,38 +6,48 @@ use App\Repository\EmployeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EmployeRepository::class)]
+#[ORM\Table(name: 'employe')]
 class Employe
 {
     #[ORM\Id]
-    #[ORM\OneToOne(targetEntity: Users::class)]
-    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false)]
-    private ?Users $user = null;
+    #[ORM\Column(type: 'bigint')]
+    private ?int $userId = null;
 
-    #[ORM\Column(length: 60)]
-    private string $matricule;
+    #[ORM\OneToOne(inversedBy: 'employe', targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    private ?User $user = null;
 
-    #[ORM\Column(length: 120)]
-    private string $position;
+    #[ORM\Column(type: 'string', length: 60, unique: true)]
+    private ?string $matricule = null;
 
-    #[ORM\Column(type: "date")]
-    private \DateTimeInterface $date_embauche;
+    #[ORM\Column(type: 'string', length: 120)]
+    private ?string $position = null;
 
-    // 🔥 CRITICAL FIX
-    public function getId(): ?int
+    #[ORM\Column(type: 'date')]
+    private ?\DateTimeInterface $dateEmbauche = null;
+
+    public function getUserId(): ?int
     {
-        return $this->user?->getId();
+        return $this->userId;
     }
 
-    // ===== GETTERS & SETTERS =====
+    public function setUserId(int $userId): self
+    {
+        $this->userId = $userId;
+        return $this;
+    }
 
-    public function getUser(): ?Users
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(Users $user): static
+    public function setUser(?User $user): self
     {
         $this->user = $user;
+        if ($user !== null) {
+            $this->userId = $user->getId();
+        }
         return $this;
     }
 
@@ -46,7 +56,7 @@ class Employe
         return $this->matricule;
     }
 
-    public function setMatricule(string $matricule): static
+    public function setMatricule(string $matricule): self
     {
         $this->matricule = $matricule;
         return $this;
@@ -57,7 +67,7 @@ class Employe
         return $this->position;
     }
 
-    public function setPosition(string $position): static
+    public function setPosition(string $position): self
     {
         $this->position = $position;
         return $this;
@@ -65,12 +75,12 @@ class Employe
 
     public function getDateEmbauche(): ?\DateTimeInterface
     {
-        return $this->date_embauche;
+        return $this->dateEmbauche;
     }
 
-    public function setDateEmbauche(\DateTimeInterface $date_embauche): static
+    public function setDateEmbauche(\DateTimeInterface $dateEmbauche): self
     {
-        $this->date_embauche = $date_embauche;
+        $this->dateEmbauche = $dateEmbauche;
         return $this;
     }
 }
