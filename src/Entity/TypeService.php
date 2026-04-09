@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 use App\Repository\TypeServiceRepository;
 
@@ -25,17 +23,6 @@ private ?int $id = null;
 
     #[ORM\Column(nullable: true)]
     private ?string $description = null;
-
-    /**
-     * @var Collection<int, DemandeService>
-     */
-    #[ORM\OneToMany(mappedBy: 'type', targetEntity: DemandeService::class, orphanRemoval: true, cascade: ['remove'])]
-    private Collection $demandeServices;
-
-    public function __construct()
-    {
-        $this->demandeServices = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -76,14 +63,6 @@ private ?int $id = null;
         $this->description = $description;
 
         return $this;
-    }
-
-    /**
-     * @return Collection<int, DemandeService>
-     */
-    public function getDemandeServices(): Collection
-    {
-        return $this->demandeServices;
     }
 
 }
