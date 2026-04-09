@@ -24,19 +24,21 @@ security:
             logout:
                 path: app_logout
                 target: app_home
+            # activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#the-firewall
 
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/login,            roles: PUBLIC_ACCESS }
-        - { path: ^/register,         roles: PUBLIC_ACCESS }
-        - { path: ^/conge/tt/new,     roles: ROLE_EMPLOYE }
-        - { path: ^/conge/tt,         roles: [ROLE_EMPLOYE, ROLE_RH] }
-        - { path: ^/reponse,          roles: ROLE_RH }
-        - { path: ^/rh,               roles: ROLE_RH }
-        - { path: ^/candidat,         roles: ROLE_CANDIDAT }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/rh, roles: ROLE_RH }
+        - { path: ^/candidat, roles: ROLE_CANDIDAT }
         - { path: ^/register/candidat, roles: ROLE_CANDIDAT }
-        - { path: ^/employe,          roles: ROLE_EMPLOYE }
-        - { path: ^/dashboard,        roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/,                 roles: PUBLIC_ACCESS }
+
+        - { path: ^/employe, roles: ROLE_EMPLOYE }
+        - { path: ^/dashboard, roles: [ROLE_CANDIDAT, ROLE_EMPLOYE, ROLE_RH] }
+        - { path: ^/, roles: PUBLIC_ACCESS }
 
     role_hierarchy:
         ROLE_RH: [ROLE_USER, ROLE_CANDIDAT, ROLE_EMPLOYE]

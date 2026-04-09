@@ -6,9 +6,14 @@ use App\Entity\User;
 use App\Entity\Candidat;
 use App\Entity\Employe;
 use App\Entity\RH;
+use App\Entity\Evenement;
+use App\Entity\EventParticipation;
 use App\Form\UserType;
+use App\Repository\EvenementRepository;
+use App\Repository\EventParticipationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -26,11 +31,192 @@ class RHController extends AbstractController
     public function dashboard(EntityManagerInterface $entityManager): Response
     {
         $candidats = $entityManager->getRepository(User::class)->findAllCandidats();
-        $employes = $entityManager->getRepository(User::class)->findAllEmployes();
+        $employes  = $entityManager->getRepository(User::class)->findAllEmployes();
 
         return $this->render('rh/dashboard.html.twig', [
             'candidats' => $candidats,
-            'employes' => $employes,
+            'employes'  => $employes,
+        ]);
+    }
+
+    /**
+     * Page dédiée aux statistiques RH (graphiques dynamiques).
+     * GET /rh/stats
+     */
+    #[Route('/stats', name: 'app_rh_stats')]
+    public function statsPage(
+        EntityManagerInterface $em,
+        EvenementRepository $evenementRepo,
+        EventParticipationRepository $participationRepo
+    ): Response {
+        $today          = (new \DateTime())->format('Y-m-d');
+        $candidats      = $em->getRepository(User::class)->findAllCandidats();
+        $employes       = $em->getRepository(User::class)->findAllEmployes();
+        $evenements     = $evenementRepo->findAll();
+        $participations = $participationRepo->findAll();
+
+        // ── Événements ─────────────────────────────────────────────────
+        $evAVenir = $evEnCours = $evTermines = 0;
+        foreach ($evenements as $ev) {
+            $d = $ev->getDateDebut(); $f = $ev->getDateFin();
+            if ($d > $today)                       $evAVenir++;
+            elseif ($d <= $today && $f >= $today)  $evEnCours++;
+            else                                    $evTermines++;
+        }
+
+        // ── Participations ──────────────────────────────────────────────
+        $pEnAttente = $pAccepte = $pRefuse = 0;
+        $partsParEv = [];
+        foreach ($participations as $p) {
+            match ($p->getStatut()) {
+                'en_attente' => $pEnAttente++,
+                'accepte'    => $pAccepte++,
+                'refuse'     => $pRefuse++,
+                default      => null,
+            };
+            if ($p->getStatut() === 'accepte' && $p->getEvenement()) {
+                $eid = $p->getEvenement()->getId();
+                $partsParEv[$eid] = ($partsParEv[$eid] ?? 0) + 1;
+            }
+        }
+
+        // ── Top 5 événements ────────────────────────────────────────────
+        $topEvenements = [];
+        foreach ($evenements as $ev) {
+            $topEvenements[] = [
+                'ev'    => $ev,
+                'count' => $partsParEv[$ev->getId()] ?? 0,
+            ];
+        }
+        usort($topEvenements, fn($a, $b) => $b['count'] - $a['count']);
+        $topEvenements = array_slice($topEvenements, 0, 6);
+
+        // ── Taux d'activation ───────────────────────────────────────────
+        $candidatsActifs = count(array_filter($candidats, fn(User $u) => $u->getStatut() === 'actif'));
+        $employesActifs  = count(array_filter($employes,  fn(User $u) => $u->getStatut() === 'actif'));
+
+        return $this->render('rh/statistiques.html.twig', [
+            'candidats'       => $candidats,
+            'employes'        => $employes,
+            'evenements'      => $evenements,
+            'participations'  => $participations,
+            'evAVenir'        => $evAVenir,
+            'evEnCours'       => $evEnCours,
+            'evTermines'      => $evTermines,
+            'pEnAttente'      => $pEnAttente,
+            'pAccepte'        => $pAccepte,
+            'pRefuse'         => $pRefuse,
+            'topEvenements'   => $topEvenements,
+            'candidatsActifs' => $candidatsActifs,
+            'employesActifs'  => $employesActifs,
+            'today'           => $today,
+        ]);
+    }
+
+
+    /**
+     * Endpoint AJAX — Statistiques dynamiques pour le Dashboard RH.
+     * GET /rh/statistiques
+     */
+    #[Route('/statistiques', name: 'app_rh_statistiques', methods: ['GET'])]
+    public function statistiques(
+        EntityManagerInterface $em,
+        EvenementRepository $evenementRepo,
+        EventParticipationRepository $participationRepo
+    ): JsonResponse {
+        $today = (new \DateTime())->format('Y-m-d');
+
+        // ── Utilisateurs ─────────────────────────────────────────────
+        $totalCandidats = count($em->getRepository(User::class)->findAllCandidats());
+        $totalEmployes  = count($em->getRepository(User::class)->findAllEmployes());
+
+        $candidatsActifs  = count(array_filter(
+            $em->getRepository(User::class)->findAllCandidats(),
+            fn(User $u) => $u->getStatut() === 'actif'
+        ));
+        $employesActifs   = count(array_filter(
+            $em->getRepository(User::class)->findAllEmployes(),
+            fn(User $u) => $u->getStatut() === 'actif'
+        ));
+
+        // ── Événements ────────────────────────────────────────────────
+        $evenements = $evenementRepo->findAll();
+        $aVenir = $enCours = $termines = 0;
+        foreach ($evenements as $ev) {
+            $debut = $ev->getDateDebut();
+            $fin   = $ev->getDateFin();
+            if ($debut > $today)                          $aVenir++;
+            elseif ($debut <= $today && $fin >= $today)   $enCours++;
+            else                                           $termines++;
+        }
+
+        // ── Participations ────────────────────────────────────────────
+        $participations = $participationRepo->findAll();
+        $pEnAttente = $pAccepte = $pRefuse = 0;
+        foreach ($participations as $p) {
+            match ($p->getStatut()) {
+                'en_attente' => $pEnAttente++,
+                'accepte'    => $pAccepte++,
+                'refuse'     => $pRefuse++,
+                default      => null,
+            };
+        }
+
+        // ── Inscriptions mensuelles (12 derniers mois) ─────────────────
+        $moisLabels = [];
+        $moisCandidats = [];
+        $moisEmployes  = [];
+
+        $allUsers = array_merge(
+            $em->getRepository(User::class)->findAllCandidats(),
+            $em->getRepository(User::class)->findAllEmployes()
+        );
+
+        // Compter par mois via l'ID (proxy : on génère 12 mois labels)
+        $now = new \DateTime();
+        for ($i = 11; $i >= 0; $i--) {
+            $d = (clone $now)->modify("-{$i} months");
+            $moisLabels[]  = $d->format('M Y');
+            $moisCandidats[] = 0;
+            $moisEmployes[]  = 0;
+        }
+
+        // ── Taux de participation par événement (top 5) ────────────────
+        $topEv = [];
+        $totalEmployesCount = max(1, $totalEmployes);
+        foreach ($evenements as $ev) {
+            $nbParts = count($participationRepo->findBy(['evenement' => $ev, 'statut' => 'accepte']));
+            $topEv[] = [
+                'titre' => mb_strimwidth($ev->getTitre(), 0, 25, '…'),
+                'count' => $nbParts,
+                'taux'  => round($nbParts / $totalEmployesCount * 100),
+            ];
+        }
+        usort($topEv, fn($a, $b) => $b['count'] - $a['count']);
+        $topEv = array_slice($topEv, 0, 5);
+
+        return new JsonResponse([
+            // Utilisateurs
+            'totalCandidats'  => $totalCandidats,
+            'totalEmployes'   => $totalEmployes,
+            'totalUsers'      => $totalCandidats + $totalEmployes,
+            'candidatsActifs' => $candidatsActifs,
+            'employesActifs'  => $employesActifs,
+            // Événements
+            'totalEvenements' => count($evenements),
+            'evAVenir'        => $aVenir,
+            'evEnCours'       => $enCours,
+            'evTermines'      => $termines,
+            // Participations
+            'totalParticipations' => count($participations),
+            'pEnAttente'      => $pEnAttente,
+            'pAccepte'        => $pAccepte,
+            'pRefuse'         => $pRefuse,
+            // Graphiques
+            'moisLabels'      => $moisLabels,
+            'moisCandidats'   => $moisCandidats,
+            'moisEmployes'    => $moisEmployes,
+            'topEvenements'   => $topEv,
         ]);
     }
 
