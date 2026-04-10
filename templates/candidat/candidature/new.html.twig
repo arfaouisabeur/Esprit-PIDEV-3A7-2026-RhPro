@@ -1,0 +1,52 @@
+{% extends 'candidat/base.html.twig' %}
+
+{% block title %}Postuler{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            <i class="bi bi-send-check-fill"></i>
+            Postuler à une offre
+        </h1>
+        <p class="page-subtitle">Remplissez le formulaire pour envoyer votre candidature.</p>
+    </div>
+
+    <div class="header-actions">
+        <a href="{{ path('candidat_offres') }}" class="btn-soft">
+            <i class="bi bi-arrow-left me-2"></i>Retour
+        </a>
+    </div>
+</div>
+
+<div class="panel form-card">
+    <div class="panel-head">
+        <h2 class="panel-title">
+            <i class="bi bi-pencil-square"></i>
+            Formulaire de candidature
+        </h2>
+    </div>
+
+    <div class="panel-body">
+        <div class="modern-form">
+            {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+
+                {{ form_errors(form) }}
+
+                <div class="mb-3">
+                    {{ form_label(form.cvFile) }}
+                    {{ form_widget(form.cvFile, {'attr': {'accept': 'application/pdf,.pdf'}}) }}
+                    {{ form_errors(form.cvFile) }}
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn-main">
+                        <i class="bi bi-send-fill me-2"></i>Envoyer ma candidature
+                    </button>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

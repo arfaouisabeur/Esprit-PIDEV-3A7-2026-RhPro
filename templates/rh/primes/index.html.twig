@@ -1,0 +1,267 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container py-5">
+
+    <!-- 🔥 HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+
+        <div class="header-block">
+            <div class="header-icon">💎</div>
+            <div>
+                <h1 class="header-title">Primes</h1>
+                <p class="header-subtitle">Gérez les primes des employés</p>
+            </div>
+        </div>
+
+        <a href="{{ path('app_rh_prime_new') }}" class="btn btn-main">
+            + Nouvelle
+        </a>
+
+    </div>
+
+    <!-- 🔥 STATS -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-6">
+            <div class="stat-card">
+                <p>Total primes</p>
+                <h3>{{ primes|length }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="stat-card purple">
+                <p>Montant total</p>
+                <h3>{{ total_montant }} DT</h3>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 🔍 FILTER -->
+    <div class="filter-card mb-4">
+
+        <div class="d-flex align-items-center gap-3">
+            <input type="text" id="search" class="modern-input"
+                   placeholder="🔍 Rechercher employé...">
+
+            <button class="btn btn-main px-4">Rechercher</button>
+        </div>
+
+    </div>
+
+    <!-- 💎 TABLE -->
+    <div class="table-card">
+
+        <div class="table-header-top">
+            <h5 class="mb-0">📊 Liste des primes</h5>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0" id="table">
+
+                <thead>
+                    <tr>
+                        <th>Employé</th>
+                        <th>Montant</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Actions</th> <!-- ✅ ADDED -->
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for prime in primes %}
+                    <tr data-name="{{ prime.contract.employe.user.fullName|lower }}">
+
+                        <td class="fw-semibold">
+                            {{ prime.contract.employe.user.fullName }}
+                        </td>
+
+                        <td>
+                            <span class="badge-amount">
+                                {{ prime.montant }} DT
+                            </span>
+                        </td>
+
+                        <td class="text-muted">
+                            {{ prime.dateAttribution|date('d/m/Y') }}
+                        </td>
+
+                        <td class="text-muted">
+                            {{ prime.description ?: '-' }}
+                        </td>
+
+                        <!-- 🔥 ACTIONS -->
+                        <td class="d-flex gap-2">
+
+                            <!-- ✏ EDIT -->
+                            <a href="{{ path('app_rh_prime_edit', {'id': prime.id}) }}"
+                               class="btn btn-sm btn-warning">
+                                ✏
+                            </a>
+
+                            <!-- 🗑 DELETE -->
+                            <form method="post"
+                                  action="{{ path('app_rh_prime_delete', {'id': prime.id}) }}"
+                                  onsubmit="return confirm('Supprimer cette prime ?');">
+
+                                <input type="hidden" name="_token"
+                                       value="{{ csrf_token('delete' ~ prime.id) }}">
+
+                                <button class="btn btn-sm btn-danger">
+                                    🗑
+                                </button>
+                            </form>
+
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- 🔥 SEARCH SCRIPT -->
+<script>
+const input = document.getElementById('search');
+const rows = document.querySelectorAll('#table tbody tr');
+
+input.addEventListener('input', function() {
+    const value = this.value.toLowerCase();
+
+    rows.forEach(row => {
+        const name = row.dataset.name;
+        row.style.display = name.includes(value) ? '' : 'none';
+    });
+});
+</script>
+
+<style>
+
+/* 🌸 BACKGROUND FIX */
+body {
+    background: #f6f4fb !important;
+}
+
+/* 🔥 HEADER */
+.header-block {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    color: white;
+}
+
+.header-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-subtitle {
+    margin: 0;
+    color: #6b7280;
+}
+
+/* BUTTON */
+.btn-main {
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    border: none;
+    color: white;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(123,47,247,0.3);
+}
+
+/* STATS */
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.stat-card p {
+    margin: 0;
+    color: #888;
+}
+
+.stat-card h3 {
+    margin: 5px 0 0;
+    font-weight: bold;
+}
+
+.stat-card.purple {
+    border-left: 4px solid #7b2ff7;
+}
+
+/* FILTER */
+.filter-card {
+    background: white;
+    padding: 15px;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.modern-input {
+    flex: 1;
+    border-radius: 12px;
+    padding: 10px;
+    border: 1px solid #eee;
+}
+
+/* TABLE */
+.table-card {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+}
+
+.table-header-top {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.table thead {
+    background: #f4f0ff;
+    color: #7b2ff7;
+}
+
+/* BADGE */
+.badge-amount {
+    background: #dcfce7;
+    color: #16a34a;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+/* ROW HOVER */
+tbody tr:hover {
+    background: #f9f5ff;
+}
+
+</style>
+
+{% endblock %}
