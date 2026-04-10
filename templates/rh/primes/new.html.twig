@@ -1,0 +1,316 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container py-5">
+
+    <!-- 🔥 HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div class="header-block">
+            <div class="header-icon">💎</div>
+            <div>
+                <h1 class="header-title">Ajouter Prime</h1>
+                <p class="header-subtitle">Attribuer une prime à un employé</p>
+            </div>
+        </div>
+
+        <a href="{{ path('app_rh_prime_index') }}" class="btn btn-back">
+            ← Retour
+        </a>
+
+    </div>
+
+    <!-- ERRORS -->
+    {% if form_errors(form) %}
+        <div class="alert alert-danger">
+            {{ form_errors(form) }}
+        </div>
+    {% endif %}
+
+    <!-- 💎 FORM CARD -->
+    <div class="form-card">
+
+        {{ form_start(form) }}
+
+        <div class="row g-4">
+
+            <!-- 👤 EMPLOYEE SEARCH -->
+            <div class="col-md-12 position-relative">
+                <label class="form-label">👤 Employé</label>
+
+                <input type="text" id="employeeSearch" class="form-control"
+                       placeholder="🔍 Rechercher employé...">
+
+                <div id="results" class="list-group position-absolute w-100 mt-1"></div>
+
+                <div style="display:none;">
+                    {{ form_widget(form.contract) }}
+                </div>
+
+                <!-- 🔥 ERROR -->
+                <div class="text-danger small">
+                    {{ form_errors(form.contract) }}
+                </div>
+            </div>
+
+            <!-- 💰 MONTANT -->
+            <div class="col-md-6">
+                <label class="form-label">💰 Montant</label>
+                <div class="input-group">
+                    {{ form_widget(form.montant, {
+                        'attr': {'class': 'form-control', 'placeholder': 'Ex: 500'}
+                    }) }}
+                    <span class="input-group-text">DT</span>
+                </div>
+
+                <!-- 🔥 ERROR -->
+                <div class="text-danger small">
+                    {{ form_errors(form.montant) }}
+                </div>
+            </div>
+
+            <!-- 📅 DATE -->
+            <div class="col-md-6">
+                <label class="form-label">📅 Date attribution</label>
+                {{ form_widget(form.date_attribution, {
+                    'attr': {'class': 'form-control'}
+                }) }}
+
+                <!-- 🔥 ERROR -->
+                <div class="text-danger small">
+                    {{ form_errors(form.date_attribution) }}
+                </div>
+            </div>
+
+            <!-- 📝 DESCRIPTION -->
+            <div class="col-md-12">
+                <label class="form-label">📝 Description</label>
+                {{ form_widget(form.description, {
+                    'attr': {'class': 'form-control', 'placeholder': 'Ajouter une description...'}
+                }) }}
+
+                <!-- 🔥 ERROR -->
+                <div class="text-danger small">
+                    {{ form_errors(form.description) }}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 🔥 BUTTON -->
+        <div class="text-end mt-4">
+            <button class="btn btn-main">
+                💾 Enregistrer
+            </button>
+        </div>
+
+        {{ form_end(form) }}
+
+    </div>
+
+</div>
+
+<!-- 🔍 SEARCH SCRIPT (UNCHANGED) -->
+<script>
+const input = document.getElementById('employeeSearch');
+const results = document.getElementById('results');
+const hiddenSelect = document.getElementById('{{ form.contract.vars.id }}');
+
+input.addEventListener('input', function() {
+
+    const value = this.value.toLowerCase();
+    results.innerHTML = '';
+
+    Array.from(hiddenSelect.options).forEach(option => {
+
+        if (option.text.toLowerCase().includes(value)) {
+
+            const item = document.createElement('a');
+            item.className = 'list-group-item list-group-item-action';
+            item.textContent = option.text;
+
+            item.onclick = () => {
+                input.value = option.text;
+                hiddenSelect.value = option.value;
+                results.innerHTML = '';
+            };
+
+            results.appendChild(item);
+        }
+
+    });
+
+});
+</script>
+
+<!-- 🔥 REAL-TIME VALIDATION -->
+<script>
+const montant = document.querySelector('[name$="[montant]"]');
+const date = document.querySelector('[name$="[date_attribution]"]');
+
+function showError(input, message) {
+    let error = input.parentElement.querySelector('.live-error');
+
+    if (!error) {
+        error = document.createElement('div');
+        error.className = 'text-danger small live-error';
+        input.parentElement.appendChild(error);
+    }
+
+    error.innerText = message;
+}
+
+function clearError(input) {
+    const error = input.parentElement.querySelector('.live-error');
+    if (error) error.remove();
+}
+
+// 💰 montant
+montant.addEventListener('input', () => {
+    clearError(montant);
+
+    if (montant.value && parseFloat(montant.value) <= 0) {
+        showError(montant, "Montant doit être positif");
+    }
+});
+
+// 📅 date
+date.addEventListener('change', () => {
+    clearError(date);
+
+    if (!date.value) {
+        showError(date, "Date obligatoire");
+    }
+});
+
+// 🔥 BLOCK SUBMIT
+document.querySelector('form').addEventListener('submit', function(e) {
+
+    let hasError = false;
+
+    document.querySelectorAll('.live-error').forEach(el => el.remove());
+
+    if (!montant.value || parseFloat(montant.value) <= 0) {
+        showError(montant, "Montant invalide");
+        hasError = true;
+    }
+
+    if (!date.value) {
+        showError(date, "Date obligatoire");
+        hasError = true;
+    }
+
+    if (hasError) {
+        e.preventDefault();
+    }
+});
+</script>
+
+<style>
+
+/* 🌸 BACKGROUND FIX */
+body {
+    background: #f6f4fb !important;
+}
+
+/* 🔥 HEADER */
+.header-block {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    color: white;
+    box-shadow: 0 10px 25px rgba(123,47,247,0.3);
+}
+
+.header-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-subtitle {
+    margin: 0;
+    color: #6b7280;
+}
+
+/* 🔙 BACK BUTTON */
+.btn-back {
+    background: white;
+    border-radius: 20px;
+    padding: 8px 16px;
+    border: 1px solid #eee;
+}
+
+.btn-back:hover {
+    background: #f3f0ff;
+}
+
+/* 💎 CARD */
+.form-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+}
+
+/* LABEL */
+.form-label {
+    font-weight: 600;
+    color: #555;
+}
+
+/* INPUT */
+.form-control,
+.input-group-text {
+    border-radius: 12px;
+    border: 1px solid #eee;
+    padding: 10px;
+}
+
+.form-control:focus {
+    border-color: #7b2ff7;
+    box-shadow: 0 0 0 3px rgba(123,47,247,0.1);
+}
+
+/* SEARCH RESULTS */
+#results {
+    z-index: 1000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* 🔥 BUTTON */
+.btn-main {
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    border: none;
+    color: white;
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(123,47,247,0.3);
+    transition: 0.3s;
+}
+
+.btn-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(123,47,247,0.4);
+}
+
+</style>
+
+{% endblock %}

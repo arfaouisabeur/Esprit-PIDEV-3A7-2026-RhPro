@@ -1,0 +1,59 @@
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        App\Entity\User:
+            algorithm: auto
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            lazy: true
+            provider: app_user_provider
+            custom_authenticator: App\Security\LoginFormAuthenticator
+            logout:
+                path: app_logout
+                target: app_home
+
+    access_control:
+        # PUBLIC
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+
+        # ===== 🔥 CONGÉ (ADDED SAFE) =====
+        - { path: ^/conge/tt/new, roles: ROLE_EMPLOYE }
+        - { path: ^/conge/tt, roles: [ROLE_EMPLOYE, ROLE_RH] }
+
+        # ===== 🔥 SERVICES (KEEP CONSISTENT) =====
+        - { path: ^/demande-service, roles: [ROLE_EMPLOYE, ROLE_RH] }
+        - { path: ^/type-service, roles: ROLE_RH }
+
+        # ===== 🔥 EVENTS (OPTIONAL BUT SAFE) =====
+        - { path: ^/evenement, roles: [ROLE_EMPLOYE, ROLE_RH] }
+        - { path: ^/participation, roles: [ROLE_EMPLOYE, ROLE_RH] }
+
+        # ===== 🔥 OTHER (FROM HIS VERSION) =====
+        - { path: ^/reponse, roles: ROLE_RH }
+
+        # ===== ORIGINAL (UNCHANGED) =====
+        - { path: ^/rh, roles: ROLE_RH }
+        - { path: ^/candidat, roles: ROLE_CANDIDAT }
+        - { path: ^/register/candidat, roles: ROLE_CANDIDAT }
+        - { path: ^/employe, roles: ROLE_EMPLOYE }
+
+        # ===== DASHBOARD (SAFE VERSION) =====
+        - { path: ^/dashboard, roles: IS_AUTHENTICATED_FULLY }
+
+        # DEFAULT
+        - { path: ^/, roles: PUBLIC_ACCESS }
+
+    role_hierarchy:
+        ROLE_RH: [ROLE_USER, ROLE_CANDIDAT, ROLE_EMPLOYE]

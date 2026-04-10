@@ -1,0 +1,19 @@
+<h2 style="text-align:center;">CONTRAT DE TRAVAIL</h2>
+
+<hr>
+
+<p><strong>Employé :</strong> {{ contract.employe.user.fullName }}</p>
+<p><strong>Type :</strong> {{ contract.type }}</p>
+<p><strong>Date début :</strong> {{ contract.dateDebut }}</p>
+<p><strong>Date fin :</strong> {{ contract.dateFin ?? 'Indéterminée' }}</p>
+
+<p><strong>Salaire :</strong> {{ contract.salaireBase }} DT</p>
+
+<p><strong>Description :</strong><br>
+{{ contract.description }}
+</p>
+
+<br><br>
+
+<p>Signature RH</p>
+<hr style="width:200px;">
