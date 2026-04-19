@@ -1,0 +1,341 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container py-5">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div class="header-block">
+            <div class="header-icon">💰</div>
+            <div>
+                <h1 class="header-title">Ajouter Salaire</h1>
+                <p class="header-subtitle">Créer un salaire pour un employé</p>
+            </div>
+        </div>
+
+        <a href="{{ path('app_rh_salaire_index') }}" class="btn btn-back">
+            ← Retour
+        </a>
+
+    </div>
+
+    <!-- FORM ERRORS -->
+    {% if form_errors(form) %}
+        <div class="alert alert-danger">
+            {{ form_errors(form) }}
+        </div>
+    {% endif %}
+
+    <!-- CARD -->
+    <div class="form-card">
+
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+        <div class="row g-4">
+
+            <!-- EMPLOYEE SEARCH -->
+           <div class="col-md-12 position-relative">
+                <label class="form-label fw-semibold">👤 Employé</label>
+
+                <!-- SEARCH INPUT -->
+                <input type="text" id="employeeSearch" class="form-control"
+                       placeholder="🔍 Rechercher employé...">
+
+                <!-- RESULTS -->
+                <div id="results" class="list-group position-absolute w-100"></div>
+
+                <!-- 🔥 HIDDEN SELECT -->
+                <div style="display:none;">
+                    {{ form_widget(form.contract) }}
+                </div>
+
+                <!-- 🔥 ERROR -->
+                <div class="text-danger small">
+                    {{ form_errors(form.contract) }}
+                </div>
+            </div>
+
+            <!-- MOIS -->
+            <div class="col-md-6">
+                <label class="form-label">📅 Mois</label>
+                {{ form_widget(form.mois, {
+                    'attr': {'class': 'form-select'}
+                }) }}
+                <div class="text-danger small">
+                    {{ form_errors(form.mois) }}
+                </div>
+            </div>
+
+            <!-- ANNEE -->
+            <div class="col-md-6">
+                <label class="form-label">📆 Année</label>
+                {{ form_widget(form.annee, {
+                    'attr': {'class': 'form-control', 'placeholder': 'Ex: 2026'}
+                }) }}
+                <div class="text-danger small">
+                    {{ form_errors(form.annee) }}
+                </div>
+            </div>
+
+            <!-- MONTANT -->
+            <div class="col-md-6">
+                <label class="form-label">💸 Montant</label>
+                <div class="input-group">
+                    {{ form_widget(form.montant, {
+                        'attr': {'class': 'form-control', 'placeholder': 'Ex: 1200'}
+                    }) }}
+                    <span class="input-group-text">DT</span>
+                </div>
+                <div class="text-danger small">
+                    {{ form_errors(form.montant) }}
+                </div>
+            </div>
+
+            <!-- STATUT -->
+            <div class="col-md-6">
+                <label class="form-label">📊 Statut</label>
+                {{ form_widget(form.statut, {
+                    'attr': {'class': 'form-select'}
+                }) }}
+                <div class="text-danger small">
+                    {{ form_errors(form.statut) }}
+                </div>
+            </div>
+
+            <!-- DATE -->
+            <div class="col-md-12">
+                <label class="form-label">📌 Date paiement</label>
+                {{ form_widget(form.date_paiement, {
+                    'attr': {'class': 'form-control'}
+                }) }}
+                <div class="text-danger small">
+                    {{ form_errors(form.date_paiement) }}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SUBMIT -->
+        <div class="text-end mt-4">
+            <button class="btn btn-save">💾 Enregistrer</button>
+        </div>
+
+        {{ form_end(form) }}
+
+    </div>
+
+</div>
+
+<style>
+/* 🌸 BACKGROUND */
+body { background: #f6f4fb !important; }
+
+/* HEADER */
+.header-block { display: flex; align-items: center; gap: 15px; }
+
+.header-icon {
+    width: 55px; height: 55px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    color: white;
+    box-shadow: 0 10px 25px rgba(123, 47, 247, 0.3);
+}
+
+.header-title {
+    font-size: 2rem; font-weight: 800;
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-subtitle { color: #6b7280; }
+
+.btn-back {
+    background: white;
+    border-radius: 20px;
+    padding: 8px 16px;
+    border: 1px solid #eee;
+}
+
+.form-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+}
+
+.form-control, .form-select {
+    border-radius: 12px;
+    padding: 10px;
+    border: 1px solid #eee;
+}
+
+#results {
+    z-index: 20;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    color: white;
+    border-radius: 25px;
+    padding: 10px 25px;
+}
+</style>
+
+<script>
+// =========================
+// 🔍 SEARCH + SELECTION
+// =========================
+const input = document.getElementById('employeeSearch');
+const results = document.getElementById('results');
+const hiddenSelect = document.getElementById('{{ form.contract.vars.id }}');
+
+// track selection
+input.dataset.selected = "false";
+
+input.addEventListener('input', function() {
+
+    input.dataset.selected = "false"; // reset if typing
+    const value = this.value.toLowerCase();
+    results.innerHTML = '';
+
+    Array.from(hiddenSelect.options).forEach(option => {
+
+        if (!option.value) return;
+
+        if (option.text.toLowerCase().includes(value)) {
+
+            const item = document.createElement('a');
+            item.className = 'list-group-item list-group-item-action';
+            item.textContent = option.text;
+
+            item.onclick = () => {
+                input.value = option.text;
+                hiddenSelect.value = option.value;
+                input.dataset.selected = "true"; // ✅ selected
+                results.innerHTML = '';
+            };
+
+            results.appendChild(item);
+        }
+
+    });
+
+});
+
+// =========================
+// 🔥 VALIDATION HELPERS
+// =========================
+function showError(input, message) {
+    let error = input.parentElement.querySelector('.live-error');
+
+    if (!error) {
+        error = document.createElement('div');
+        error.className = 'text-danger small live-error';
+        input.parentElement.appendChild(error);
+    }
+
+    error.innerText = message;
+}
+
+function clearError(input) {
+    const error = input.parentElement.querySelector('.live-error');
+    if (error) error.remove();
+}
+
+// =========================
+// 🔥 INPUT REFERENCES
+// =========================
+const montant = document.querySelector('[name$="[montant]"]');
+const annee = document.querySelector('[name$="[annee]"]');
+const mois = document.querySelector('[name$="[mois]"]');
+const statut = document.querySelector('[name$="[statut]"]');
+
+// =========================
+// 🔄 REAL-TIME VALIDATION
+// =========================
+
+// montant
+montant.addEventListener('input', () => {
+    clearError(montant);
+    if (montant.value && parseFloat(montant.value) <= 0) {
+        showError(montant, "Montant doit être positif");
+    }
+});
+
+// annee
+annee.addEventListener('input', () => {
+    clearError(annee);
+    if (annee.value && (annee.value < 2000 || annee.value > 2100)) {
+        showError(annee, "Année invalide");
+    }
+});
+
+// mois
+mois.addEventListener('change', () => {
+    clearError(mois);
+});
+
+// statut
+statut.addEventListener('change', () => {
+    clearError(statut);
+});
+
+// =========================
+// 🚀 FINAL SUBMIT VALIDATION
+// =========================
+document.querySelector('form').addEventListener('submit', function(e) {
+
+    let hasError = false;
+
+    document.querySelectorAll('.live-error').forEach(el => el.remove());
+
+    // 💰 montant
+    if (!montant.value || parseFloat(montant.value) <= 0) {
+        showError(montant, "Montant invalide");
+        hasError = true;
+    }
+
+    // 📆 année
+    if (!annee.value || annee.value < 2000 || annee.value > 2100) {
+        showError(annee, "Année invalide");
+        hasError = true;
+    }
+
+    // 📅 mois
+    if (!mois.value) {
+        showError(mois, "Mois obligatoire");
+        hasError = true;
+    }
+
+    // 📊 statut
+    if (!statut.value) {
+        showError(statut, "Statut obligatoire");
+        hasError = true;
+    }
+
+    // 👤 contract (MOST IMPORTANT 🔥🔥)
+    if (!hiddenSelect.value || input.dataset.selected !== "true") {
+
+        let error = document.createElement('div');
+        error.className = 'text-danger small live-error';
+        error.innerText = "Veuillez choisir un employé depuis la liste";
+
+        input.parentElement.appendChild(error);
+        hasError = true;
+    }
+
+    // ❌ BLOCK SUBMIT
+    if (hasError) {
+        e.preventDefault();
+    }
+
+});
+</script>
+
+{% endblock %}

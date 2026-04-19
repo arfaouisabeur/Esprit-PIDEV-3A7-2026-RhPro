@@ -1,0 +1,172 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container py-5">
+
+    <!-- 🔥 HEADER -->
+    <div class="mb-5">
+        <div class="header-block">
+            <div class="header-icon">💰</div>
+            <div>
+                <h1 class="header-title">Mes Salaires</h1>
+                <p class="header-subtitle">Historique de vos paiements</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 💎 TABLE CARD -->
+    <div class="table-card">
+
+        <div class="table-header-top">
+            <h5 class="mb-0">📊 Liste des salaires</h5>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+
+                <thead>
+                    <tr>
+                        <th>Mois</th>
+                        <th>Année</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for salaire in salaires %}
+                    <tr>
+
+                        <td>
+                            {{ [
+                                'Jan','Fév','Mar','Avr','Mai','Juin',
+                                'Juil','Août','Sep','Oct','Nov','Déc'
+                            ][salaire.mois-1] }}
+                        </td>
+
+                        <td class="text-muted">
+                            {{ salaire.annee }}
+                        </td>
+
+                        <td>
+                            <span class="badge-amount">
+                                {{ salaire.montant }} DT
+                            </span>
+                        </td>
+
+                        <td>
+                            {% if salaire.statut == 'PAYE' %}
+                                <span class="badge green">Payé</span>
+                            {% else %}
+                                <span class="badge orange">En attente</span>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+
+/* 🌸 BACKGROUND */
+body {
+    background: #f6f4fb !important;
+}
+
+/* 🔥 HEADER */
+.header-block {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    color: white;
+}
+
+.header-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-subtitle {
+    margin: 0;
+    color: #6b7280;
+}
+
+/* 💎 TABLE CARD */
+.table-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+}
+
+.table-header-top {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+/* TABLE */
+.table thead {
+    background: #f4f0ff;
+    color: #7b2ff7;
+    font-weight: 600;
+}
+
+.table td {
+    padding: 14px;
+}
+
+/* 💸 AMOUNT */
+.badge-amount {
+    background: #dcfce7;
+    color: #16a34a;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+/* STATUS */
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+.badge.green {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.badge.orange {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+/* ROW HOVER */
+tbody tr:hover {
+    background: #f9f5ff;
+}
+
+</style>
+
+{% endblock %}

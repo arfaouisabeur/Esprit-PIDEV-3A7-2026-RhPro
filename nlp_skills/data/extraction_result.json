@@ -1,0 +1,182 @@
+{
+  "skills": [
+    "Certified Kubernetes Administrator",
+    "Django REST Framework",
+    "Elasticsearch DevOps",
+    "Terraform Cloud",
+    "GitHub Actions",
+    "microservices",
+    "AWS Certified",
+    "Google Cloud",
+    "Spring Boot",
+    "JavaScript",
+    "TypeScript",
+    "PostgreSQL",
+    "Kubernetes",
+    "Prometheus",
+    "Bootstrap",
+    "GitLab CI",
+    "Terraform",
+    "Français",
+    "Angular",
+    "GraphQL",
+    "FastAPI",
+    "Node.js",
+    "Laravel",
+    "MongoDB",
+    "Jenkins",
+    "Ansible",
+    "Postman",
+    "Swagger",
+    "VS Code",
+    "Grafana",
+    "Anglais",
+    "Python",
+    "Django",
+    "DevOps",
+    "Vue.js",
+    "Docker",
+    "GitHub",
+    "React",
+    "HTML5",
+    "Redux",
+    "Flask",
+    "MySQL",
+    "Redis",
+    "Azure",
+    "Agile",
+    "Scrum",
+    "CI/CD",
+    "Arabe",
+    "Java",
+    "CSS3",
+    "Jira",
+    "AWS",
+    "PHP",
+    "Git",
+    "TDD"
+  ],
+  "skills_csv": "Certified Kubernetes Administrator, Django REST Framework, Elasticsearch DevOps, Terraform Cloud, GitHub Actions, microservices, AWS Certified, Google Cloud, Spring Boot, JavaScript, TypeScript, PostgreSQL, Kubernetes, Prometheus, Bootstrap, GitLab CI, Terraform, Français, Angular, GraphQL, FastAPI, Node.js, Laravel, MongoDB, Jenkins, Ansible, Postman, Swagger, VS Code, Grafana, Anglais, Python, Django, DevOps, Vue.js, Docker, GitHub, React, HTML5, Redux, Flask, MySQL, Redis, Azure, Agile, Scrum, CI/CD, Arabe, Java, CSS3, Jira, AWS, PHP, Git, TDD",
+  "count": 55,
+  "segments_processed": 10,
+  "by_segment": [
+    {
+      "segment": "RÉSUMÉ PROFESSIONNEL\nDéveloppeur Full Stack avec 4 ans d'expérience en Python, D...",
+      "skills": [
+        "Python",
+        "Django",
+        "React",
+        "AWS",
+        "microservices",
+        "DevOps"
+      ]
+    },
+    {
+      "segment": "COMPÉTENCES TECHNIQUES Langages : Python, Java, JavaScript, TypeScript, PHP Fron...",
+      "skills": [
+        "Python",
+        "Java",
+        "JavaScript",
+        "TypeScript",
+        "PHP",
+        "React",
+        "Vue.js",
+        "Angular",
+        "HTML5",
+        "CSS3",
+        "Bootstrap",
+        "Redux",
+        "GraphQL",
+        "Django",
+        "Flask",
+        "FastAPI",
+        "Node.js",
+        "Spring Boot",
+        "Laravel"
+      ]
+    },
+    {
+      "segment": "Bases de données : MySQL, PostgreSQL, MongoDB, Redis, Elasticsearch DevOps : Doc...",
+      "skills": [
+        "MySQL",
+        "PostgreSQL",
+        "MongoDB",
+        "Redis",
+        "Elasticsearch DevOps",
+        "Docker",
+        "Kubernetes",
+        "Jenkins",
+        "GitLab CI",
+        "GitHub Actions",
+        "Terraform Cloud",
+        "AWS",
+        "Azure",
+        "Google Cloud",
+        "Ansible",
+        "Git",
+        "GitHub",
+        "Jira",
+        "Postman",
+        "Swagger",
+        "VS Code"
+      ]
+    },
+    {
+      "segment": "Méthodes : Agile, Scrum, TDD, Microservices",
+      "skills": [
+        "Agile",
+        "Scrum",
+        "TDD",
+        "Microservices"
+      ]
+    },
+    {
+      "segment": "EXPÉRIENCE Développeur Full Stack Senior — Wevioo, Tunis (2021-2024) - Développe...",
+      "skills": [
+        "React",
+        "Django REST Framework",
+        "Docker",
+        "Kubernetes",
+        "AWS",
+        "CI/CD",
+        "Jenkins",
+        "GitHub Actions"
+      ]
+    },
+    {
+      "segment": "- Optimisation PostgreSQL et mise en cache Redis",
+      "skills": [
+        "PostgreSQL",
+        "Redis"
+      ]
+    },
+    {
+      "segment": "Développeur Backend — Ooredoo Tunisia (2020-2021)\n- APIs REST avec Python FastAP...",
+      "skills": [
+        "Python",
+        "FastAPI",
+        "MongoDB",
+        "Azure",
+        "Terraform",
+        "Ansible",
+        "Prometheus",
+        "Grafana"
+      ]
+    },
+    {
+      "segment": "CERTIFICATIONS\nAWS Certified Solutions Architect — Associate (2022)\nCertified Ku...",
+      "skills": [
+        "AWS Certified",
+        "Certified Kubernetes Administrator"
+      ]
+    },
+    {
+      "segment": "LANGUES\nFrançais: Courant | Anglais: Professionnel | Arabe: Natif",
+      "skills": [
+        "Français",
+        "Anglais",
+        "Arabe"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,327 @@
+{% extends 'candidat/base.html.twig' %}
+
+{% block title %}Détail de l’offre{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+#offer-map {
+    width: 100%;
+    height: 250px;
+    border-radius: 12px;
+    z-index: 1;
+}
+.map-placeholder-large {
+    width: 100%;
+    height: 250px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #F0EEFF, #E8E5FF);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    color: #AFA9EC;
+    font-size: 14px;
+    font-weight: 500;
+}
+.map-placeholder-large i {
+    font-size: 32px;
+    color: #7F77DD;
+}
+
+/* ── Favourite button ── */
+.btn-fav-show {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #f0ebf7;
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 600;
+    font-size: .9rem;
+    color: #6d53a8;
+    cursor: pointer;
+    transition: all .2s ease;
+    box-shadow: 0 4px 14px rgba(39,19,79,.07);
+}
+.btn-fav-show:hover {
+    background: #fdf5ff;
+    border-color: #d9b8ff;
+    box-shadow: 0 6px 18px rgba(143,74,228,.15);
+}
+.btn-fav-show.is-favorite {
+    background: #fff0f4;
+    border-color: #f9c4d4;
+    color: #c93060;
+}
+.btn-fav-show .fav-icon {
+    font-size: 16px;
+    transition: transform .2s ease;
+}
+.btn-fav-show:hover .fav-icon {
+    transform: scale(1.2);
+}
+
+/* ── Toast notification ── */
+.fav-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    background: #fff;
+    border-radius: 14px;
+    padding: 12px 20px;
+    box-shadow: 0 10px 30px rgba(39,19,79,.15);
+    font-size: .9rem;
+    font-weight: 600;
+    color: #342455;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: opacity .3s ease, transform .3s ease;
+    pointer-events: none;
+    border-left: 4px solid #8f4ae4;
+}
+.fav-toast.show  { opacity: 1; transform: translateY(0); }
+.fav-toast.removed { border-left-color: #c0b8d4; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            <i class="bi bi-file-earmark-richtext-fill"></i>
+            Détail de l’offre
+        </h1>
+        <p class="page-subtitle">Consultez les détails de l’offre avant d’envoyer votre candidature.</p>
+    </div>
+
+    <div class="header-actions">
+        <a href="{{ path('candidat_postuler', {'offreId': offre.id}) }}" class="btn btn-main">
+            <i class="bi bi-send-fill me-2"></i>Postuler
+        </a>
+
+        {% if app.user %}
+            <button
+                class="btn-fav-show {% if isFavorite %}is-favorite{% endif %}"
+                id="fav-show-btn"
+                data-toggle-url="{{ path('candidat_toggle_favori', {'id': offre.id}) }}"
+            >
+                <i class="fav-icon {% if isFavorite %}bi bi-heart-fill{% else %}bi bi-heart{% endif %}"></i>
+                <span id="fav-show-label">{% if isFavorite %}Retirer favori{% else %}Ajouter favori{% endif %}</span>
+            </button>
+        {% endif %}
+
+        <a href="{{ path('candidat_offres') }}" class="btn btn-soft">
+            <i class="bi bi-arrow-left me-2"></i>Retour
+        </a>
+    </div>
+</div>
+
+<div class="detail-grid">
+    <div class="panel">
+        <div class="panel-head">
+            <h2 class="panel-title">
+                <i class="bi bi-card-text"></i>
+                {{ offre.titre }}
+            </h2>
+        </div>
+
+        <div class="panel-body">
+            <p class="desc-text">{{ offre.description }}</p>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head">
+            <h2 class="panel-title">
+                <i class="bi bi-info-circle"></i>
+                Informations
+            </h2>
+        </div>
+
+        <div class="panel-body">
+            <ul class="info-list">
+                {% if offre.localisation %}
+                    <li>
+                        <strong>Lieu</strong>
+                        <span>{{ offre.localisation }}</span>
+                    </li>
+                {% endif %}
+
+                {% if offre.typeContrat is defined and offre.typeContrat %}
+                    <li>
+                        <strong>Type</strong>
+                        <span>{{ offre.typeContrat }}</span>
+                    </li>
+                {% endif %}
+
+                {% if offre.statut is defined and offre.statut %}
+                    <li>
+                        <strong>Statut</strong>
+                        <span class="badge-soft badge-open">{{ offre.statut }}</span>
+                    </li>
+                {% endif %}
+
+                {% if offre.datePublication is defined and offre.datePublication %}
+                    <li>
+                        <strong>Publication</strong>
+                        <span>{{ offre.datePublication|date('d/m/Y') }}</span>
+                    </li>
+                {% endif %}
+
+                {% if offre.dateExpiration is defined and offre.dateExpiration %}
+                    <li>
+                        <strong>Expiration</strong>
+                        <span>{{ offre.dateExpiration|date('d/m/Y') }}</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    
+    <div class="panel">
+        <div class="panel-head">
+            <h2 class="panel-title">
+                <i class="bi bi-geo-alt"></i>
+                Localisation
+            </h2>
+        </div>
+        <div class="panel-body">
+            {% if offre.latitude and offre.longitude %}
+                <div id="offer-map" data-lat="{{ offre.latitude }}" data-lng="{{ offre.longitude }}" data-title="{{ offre.titre|e('html_attr') }}"></div>
+            {% else %}
+                <div class="map-placeholder-large">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span>{{ offre.localisation }}</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+function initOfferMap() {
+    const mapEl = document.getElementById('offer-map');
+    if (!mapEl || mapEl.hasAttribute('data-initialized')) return;
+    mapEl.setAttribute('data-initialized', 'true');
+
+    const GEOAPIFY_KEY = '{{ geoapify_key|default('') }}';
+    const lat = parseFloat(mapEl.dataset.lat);
+    const lng = parseFloat(mapEl.dataset.lng);
+    const title = mapEl.dataset.title || '';
+
+    if (isNaN(lat) || isNaN(lng)) return;
+
+    window.offerMapInstance = L.map(mapEl, {
+        center: [lat, lng],
+        zoom: 13,
+        zoomControl: true,
+        scrollWheelZoom: false,
+        attributionControl: false
+    });
+
+    L.tileLayer(
+        'https://maps.geoapify.com/v1/tile/osm-carto/{z}/{x}/{y}.png?apiKey=' + GEOAPIFY_KEY,
+        { maxZoom: 20, attribution: '© <a href="https://geoapify.com">Geoapify</a> | © OpenStreetMap' }
+    ).addTo(window.offerMapInstance);
+
+    const icon = L.divIcon({
+        html: '<div style="background:#534AB7;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(83,74,183,0.5)"></div>',
+        iconSize: [16, 16],
+        iconAnchor: [8, 8],
+        className: ''
+    });
+
+    L.marker([lat, lng], { icon: icon })
+        .addTo(window.offerMapInstance)
+        .bindPopup('<strong>' + title + '</strong>');
+}
+
+document.addEventListener('DOMContentLoaded', initOfferMap);
+document.addEventListener('turbo:load', initOfferMap);
+
+/* ─── Favourite toggle (show page) ──────────────────────────────────────── */
+let toastTimerShow = null;
+
+function showFavToast(message, removed) {
+    let toast = document.getElementById('favToastShow');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'favToastShow';
+        toast.className = 'fav-toast';
+        toast.innerHTML = '<i class="bi bi-heart-fill" style="color:#e63b6f;"></i><span id="favToastShowMsg"></span>';
+        document.body.appendChild(toast);
+    }
+    document.getElementById('favToastShowMsg').textContent = message;
+    toast.classList.toggle('removed', removed);
+    toast.classList.add('show');
+    clearTimeout(toastTimerShow);
+    toastTimerShow = setTimeout(() => toast.classList.remove('show'), 2800);
+}
+
+function initFavShowButton() {
+    const btn = document.getElementById('fav-show-btn');
+    if (!btn || btn.hasAttribute('data-fav-initialized')) return;
+    btn.setAttribute('data-fav-initialized', 'true');
+
+    btn.addEventListener('click', async function () {
+        const url    = btn.dataset.toggleUrl;
+        const icon   = btn.querySelector('.fav-icon');
+        const label  = document.getElementById('fav-show-label');
+        const isFav  = btn.classList.contains('is-favorite');
+
+        // Optimistic
+        btn.classList.toggle('is-favorite', !isFav);
+        if (!isFav) {
+            icon.classList.replace('bi-heart', 'bi-heart-fill');
+            if (label) label.textContent = 'Retirer favori';
+        } else {
+            icon.classList.replace('bi-heart-fill', 'bi-heart');
+            if (label) label.textContent = 'Ajouter favori';
+        }
+
+        try {
+            const resp = await fetch(url, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const data = await resp.json();
+            if (!data.success) throw new Error(data.message);
+
+            btn.classList.toggle('is-favorite', data.isFavorite);
+            if (data.isFavorite) {
+                icon.classList.replace('bi-heart', 'bi-heart-fill');
+                if (label) label.textContent = 'Retirer favori';
+            } else {
+                icon.classList.replace('bi-heart-fill', 'bi-heart');
+                if (label) label.textContent = 'Ajouter favori';
+            }
+            showFavToast(data.message, !data.isFavorite);
+
+        } catch (err) {
+            // Revert
+            btn.classList.toggle('is-favorite', isFav);
+            if (isFav) { icon.classList.replace('bi-heart', 'bi-heart-fill'); }
+            else       { icon.classList.replace('bi-heart-fill', 'bi-heart'); }
+            if (label) label.textContent = isFav ? 'Retirer favori' : 'Ajouter favori';
+            showFavToast('Erreur : ' + err.message, true);
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initFavShowButton);
+document.addEventListener('turbo:load', initFavShowButton);
+</script>
+{% endblock %}

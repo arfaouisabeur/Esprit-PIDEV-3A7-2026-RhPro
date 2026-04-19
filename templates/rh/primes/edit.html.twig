@@ -1,0 +1,225 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container py-5">
+
+    <!-- 🔥 HEADER -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="header-icon">🎁</div>
+        <div>
+            <h1 class="header-title">Modifier Prime</h1>
+            <p class="header-subtitle">Mettre à jour les informations de la prime</p>
+        </div>
+    </div>
+
+    <!-- 💎 CARD -->
+    <div class="form-card">
+
+        <!-- 👤 EMPLOYEE -->
+        <div class="mb-4">
+            <label class="form-label">👤 Employé</label>
+
+            <div class="employee-box">
+                {{ prime.contract.employe.user.fullName }}
+            </div>
+        </div>
+
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        <div class="row g-4">
+
+            <!-- 💰 MONTANT -->
+            <div class="col-md-6">
+                <label class="form-label">Montant</label>
+                <div class="input-group">
+                    {{ form_widget(form.montant, {'attr': {'class': 'form-control modern-input'}}) }}
+                    <span class="input-group-text">DT</span>
+                </div>
+                {{ form_errors(form.montant) }}
+            </div>
+
+            <!-- 📅 DATE -->
+            <div class="col-md-6">
+                <label class="form-label">Date attribution</label>
+                {{ form_widget(form.date_attribution, {'attr': {'class': 'form-control modern-input'}}) }}
+                {{ form_errors(form.date_attribution) }}
+            </div>
+
+            <!-- 📝 DESCRIPTION -->
+            <div class="col-md-12">
+                <label class="form-label">Description</label>
+                {{ form_widget(form.description, {'attr': {'class': 'form-control modern-input'}}) }}
+                {{ form_errors(form.description) }}
+            </div>
+
+        </div>
+
+        <!-- 🔥 BUTTON -->
+        <div class="text-end mt-4">
+            <button class="btn btn-main">💾 Mettre à jour</button>
+        </div>
+
+        {{ form_end(form) }}
+
+    </div>
+
+</div>
+
+<script>
+
+// =========================
+// 🔥 HELPERS (FIXED)
+// =========================
+function showError(input, message) {
+
+    let container = input.closest('.col-md-6, .col-md-12');
+    let oldError = container.querySelector('.live-error');
+
+    if (oldError) oldError.remove();
+
+    let error = document.createElement('div');
+    error.className = 'text-danger small live-error mt-1';
+    error.innerText = message;
+
+    container.appendChild(error);
+}
+
+function clearError(input) {
+    let container = input.closest('.col-md-6, .col-md-12');
+    let error = container.querySelector('.live-error');
+    if (error) error.remove();
+}
+
+// =========================
+// 🔥 INPUTS
+// =========================
+const montant = document.querySelector('[name$="[montant]"]');
+const date = document.querySelector('[name$="[date_attribution]"]');
+
+// =========================
+// 🔄 REAL-TIME VALIDATION
+// =========================
+
+// 💰 montant
+montant.addEventListener('input', () => {
+    clearError(montant);
+
+    if (montant.value && parseFloat(montant.value) <= 0) {
+        showError(montant, "Montant doit être positif");
+    }
+});
+
+// 📅 date
+date.addEventListener('change', () => {
+    clearError(date);
+
+    if (!date.value) {
+        showError(date, "Date obligatoire");
+    }
+});
+
+// =========================
+// 🚀 FINAL VALIDATION
+// =========================
+document.querySelector('form').addEventListener('submit', function(e) {
+
+    let hasError = false;
+
+    document.querySelectorAll('.live-error').forEach(el => el.remove());
+
+    // 💰 montant
+    if (!montant.value || parseFloat(montant.value) <= 0) {
+        showError(montant, "Montant invalide");
+        hasError = true;
+    }
+
+    // 📅 date
+    if (!date.value) {
+        showError(date, "Date obligatoire");
+        hasError = true;
+    }
+
+    if (hasError) {
+        e.preventDefault();
+    }
+
+});
+</script>
+
+<style>
+
+/* 🌸 BACKGROUND */
+body {
+    background: #f6f4fb !important;
+}
+
+/* HEADER */
+.header-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    color: white;
+}
+
+.header-title {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-subtitle {
+    color: #6b7280;
+}
+
+/* CARD */
+.form-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+}
+
+/* EMPLOYEE BOX */
+.employee-box {
+    background: #f4f0ff;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* INPUT */
+.modern-input {
+    border-radius: 12px;
+    border: 1px solid #eee;
+    padding: 10px;
+}
+
+.modern-input:focus {
+    border-color: #7b2ff7;
+    box-shadow: 0 0 0 3px rgba(123,47,247,0.1);
+}
+
+/* BUTTON */
+.btn-main {
+    background: linear-gradient(135deg, #7b2ff7, #a044ff);
+    border: none;
+    color: white;
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(123,47,247,0.3);
+}
+
+.btn-main:hover {
+    transform: translateY(-2px);
+}
+
+</style>
+
+{% endblock %}
