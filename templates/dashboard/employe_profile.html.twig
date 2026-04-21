@@ -120,6 +120,20 @@
                                 {% endif %}
                             </div>
                         </div>
+                        <button onclick="showQr()" class="btn btn-primary">
+    Générer QR Code
+</button>
+
+<div id="qrZone" style="margin-top:20px; display:none;">
+    <img src="{{ path('app_employe_qrcode') }}" alt="QR Code">
+</div>
+
+<script>
+function showQr() {
+    document.getElementById("qrZone").style.display = "block";
+}
+</script>
+
 
                         <div class="card mt-3">
                             <div class="card-header bg-danger text-white">

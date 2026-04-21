@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\ProfileCandidatType;
 use App\Form\ProfileEmployeType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -61,57 +62,63 @@ class DashboardController extends AbstractController
         $candidat = $user->getCandidat();
 
         $form = $this->createForm(ProfileCandidatType::class, $user);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Check if email already exists (except current user)
-            $newEmail = $form->get('email')->getData();
-            if ($newEmail !== $user->getEmail()) {
-                $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $newEmail]);
-                if ($existingUser) {
-                    $this->addFlash('error', 'Cet email est déjà utilisé par un autre utilisateur.');
-                    return $this->redirectToRoute('app_candidat_profile');
-                }
-            }
-
-            // Check if telephone already exists (except current user)
-            $newTelephone = $form->get('telephone')->getData();
-            if ($newTelephone !== $user->getTelephone()) {
-                $existingPhone = $entityManager->getRepository(User::class)->findOneBy(['telephone' => $newTelephone]);
-                if ($existingPhone && $existingPhone->getId() !== $user->getId()) {
-                    $this->addFlash('error', 'Ce numéro de téléphone est déjà utilisé.');
-                    return $this->redirectToRoute('app_candidat_profile');
-                }
-            }
-
-            // Update candidat info
-            if ($candidat) {
-                $candidat->setNiveauEtude($form->get('niveauEtude')->getData());
-                $candidat->setExperience($form->get('experience')->getData());
-            }
-
-            // Handle avatar upload
-            $avatarFile = $form->get('avatar')->getData();
-            if ($avatarFile) {
-                $newFilename = 'avatar_user_' . $user->getId() . '.' . $avatarFile->guessExtension();
-                $avatarFile->move(
-                    $this->getParameter('kernel.project_dir') . '/public/uploads/avatars',
-                    $newFilename
-                );
-                $user->setAvatarPath('uploads/avatars/' . $newFilename);
-            }
-
-            $entityManager->flush();
-            $this->addFlash('success', 'Votre profil a été mis à jour avec succès.');
-
-            return $this->redirectToRoute('app_candidat_profile');
-        }
-
-        // Set candidat data in form
-        if ($candidat) {
+        // Set candidat data in form BEFORE handleRequest
+        if ($candidat && !$request->isMethod('POST')) {
             $form->get('niveauEtude')->setData($candidat->getNiveauEtude());
             $form->get('experience')->setData($candidat->getExperience());
         }
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                // Check if email already exists (except current user)
+                $newEmail = $form->get('email')->getData();
+                if ($newEmail !== $user->getEmail()) {
+                    $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $newEmail]);
+                    if ($existingUser) {
+                        $this->addFlash('error', 'Cet email est déjà utilisé par un autre utilisateur.');
+                        return $this->redirectToRoute('app_candidat_profile');
+                    }
+                }
+
+                // Check if telephone already exists (except current user)
+                $newTelephone = $form->get('telephone')->getData();
+                if ($newTelephone !== $user->getTelephone()) {
+                    $existingPhone = $entityManager->getRepository(User::class)->findOneBy(['telephone' => $newTelephone]);
+                    if ($existingPhone && $existingPhone->getId() !== $user->getId()) {
+                        $this->addFlash('error', 'Ce numéro de téléphone est déjà utilisé.');
+                        return $this->redirectToRoute('app_candidat_profile');
+                    }
+                }
+
+                // Update candidat info
+                if ($candidat) {
+                    $candidat->setNiveauEtude($form->get('niveauEtude')->getData());
+                    $candidat->setExperience($form->get('experience')->getData());
+                }
+
+                // Handle avatar upload
+                $avatarFile = $form->get('avatar')->getData();
+                if ($avatarFile) {
+                    $newFilename = 'avatar_user_' . $user->getId() . '.' . $avatarFile->guessExtension();
+                    $avatarFile->move(
+                        $this->getParameter('kernel.project_dir') . '/public/uploads/avatars',
+                        $newFilename
+                    );
+                    $user->setAvatarPath('uploads/avatars/' . $newFilename);
+                }
+
+                $entityManager->flush();
+                $this->addFlash('success', 'Votre profil a été mis à jour avec succès. (100% Valid)');
+
+                return $this->redirectToRoute('app_candidat_profile');
+            } else {
+                $this->addFlash('error', 'LE FORMULAIRE A ETE SOUMIS MAIS EST INVALIDE ! Erreurs: ' . (string) $form->getErrors(true));
+            }
+        }
+
 
         return $this->render('dashboard/candidat_profile.html.twig', [
             'form' => $form->createView(),
@@ -142,6 +149,13 @@ class DashboardController extends AbstractController
         $employe = $user->getEmploye();
 
         $form = $this->createForm(ProfileEmployeType::class, $user);
+
+        // Set employe data in form BEFORE handleRequest
+        if ($employe && !$request->isMethod('POST')) {
+            $form->get('position')->setData($employe->getPosition());
+            $form->get('dateEmbauche')->setData($employe->getDateEmbauche());
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -188,11 +202,6 @@ class DashboardController extends AbstractController
             return $this->redirectToRoute('app_employe_profile');
         }
 
-        // Set employe data in form
-        if ($employe) {
-            $form->get('position')->setData($employe->getPosition());
-            $form->get('dateEmbauche')->setData($employe->getDateEmbauche());
-        }
 
         return $this->render('dashboard/employe_profile.html.twig', [
             'form' => $form->createView(),
@@ -224,4 +233,128 @@ class DashboardController extends AbstractController
         $this->addFlash('success', 'Votre compte a été supprimé avec succès.');
         return $this->redirectToRoute('app_home');
     }
+    // src/Controller/ProfileController.php  (ajoute cette méthode)
+#[Route('/save-avatar', name: 'app_save_avatar', methods: ['POST'])]
+public function saveAvatar(Request $request, EntityManagerInterface $em): JsonResponse
+{
+    $data = json_decode($request->getContent(), true);
+
+    // Vérification JSON
+    if (!$data) {
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Données invalides'
+        ], 400);
+    }
+
+    // Vérification CSRF
+    if (!$this->isCsrfTokenValid('save_avatar', $data['_token'] ?? '')) {
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Token CSRF invalide'
+        ], 403);
+    }
+
+    // Vérification utilisateur connecté
+    $user = $this->getUser();
+    if (!$user instanceof User) {
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Utilisateur non connecté'
+        ], 401);
+    }
+
+    // ✅ Récupérer le style choisi par l'utilisateur
+    $style = $data['style'] ?? 'cartoon';
+    $allowedStyles = ['cartoon', 'pixel', 'anime', 'watercolor', '3d', 'sketch'];
+    if (!in_array($style, $allowedStyles)) {
+        $style = 'cartoon';
+    }
+
+    $projectDir = $this->getParameter('kernel.project_dir');
+
+    // ✅ Photo source de l'utilisateur
+    $sourcePhoto = $user->getAvatarPath();
+    if (!$sourcePhoto) {
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Aucune photo de profil trouvée'
+        ], 400);
+    }
+
+    $sourcePhotoPath = $projectDir . '/public/' . $sourcePhoto;
+    if (!file_exists($sourcePhotoPath)) {
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Photo source introuvable',
+            'path' => $sourcePhotoPath
+        ], 404);
+    }
+
+    // Script Python
+    $scriptPath = 'C:/Users/Boudour/Desktop/pp/RHPro_app/face_ai_project/avatar_ai/generate_avatar.py';
+    if (!file_exists($scriptPath)) {
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Script Python introuvable',
+            'path' => $scriptPath
+        ], 500);
+    }
+
+    // Dossier avatars
+    $avatarDir = $projectDir . '/public/uploads/avatars/';
+    if (!is_dir($avatarDir)) {
+        mkdir($avatarDir, 0777, true);
+    }
+
+    // ✅ Nom du fichier avec style inclus
+    $fileName = 'avatar_user_' . $user->getId() . '_' . $style . '.png';
+    $filePath = $avatarDir . $fileName;
+
+    // ✅ Commande avec photo source ET style
+    $pythonExe  = 'C:/Users/Boudour/AppData/Local/Programs/Python/Python310/python.exe';
+    $command = '"' . $pythonExe . '" "' . $scriptPath . '" '
+             . '"' . $sourcePhotoPath . '" '   // argument 1 : photo source
+             . '"' . $filePath . '" '           // argument 2 : chemin output
+             . '"' . $style . '" '              // argument 3 : style
+             . '2>&1';
+
+    $output     = [];
+    $resultCode = 0;
+    exec($command, $output, $resultCode);
+
+    // Erreur Python
+// Erreur Python
+if ($resultCode !== 0) {
+    return new JsonResponse([
+        'success'      => false,
+        'message'      => 'Erreur génération avatar Python',
+        'debug'        => mb_convert_encoding(implode("\n", $output), 'UTF-8', 'UTF-8'),
+        'command'      => $command,
+        'source_exists'=> file_exists($sourcePhotoPath),
+        'source_path'  => $sourcePhotoPath,
+        'output_path'  => $filePath,
+        'style'        => $style,
+    ], 500);
+}
+    // Vérifier image créée
+    if (!file_exists($filePath)) {
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Image avatar non générée'
+        ], 500);
+    }
+
+    // Sauvegarde base de données
+    $relativePath = 'uploads/avatars/' . $fileName;
+    $user->setAvatarPath($relativePath);
+    $em->flush();
+
+    return new JsonResponse([
+        'success'    => true,
+        'avatarPath' => $relativePath,
+        'avatarUrl'  => '/uploads/avatars/' . $fileName  // ✅ URL pour mise à jour immédiate dans le DOM
+    ]);
+}
+
 }

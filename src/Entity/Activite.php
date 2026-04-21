@@ -23,14 +23,41 @@ class Activite
     #[ORM\JoinColumn(name: "evenement_id", referencedColumnName: "id", nullable: false)]
     private ?Evenement $evenement = null;
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getTitre(): ?string { return $this->titre; }
-    public function setTitre(string $titre): static { $this->titre = $titre; return $this; }
+    public function getTitre(): ?string
+    {
+        return $this->titre;
+    }
 
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(?string $description): static { $this->description = $description; return $this; }
+    public function setTitre(string $titre): static
+    {
+        $this->titre = $titre;
+        return $this;
+    }
 
-    public function getEvenement(): ?Evenement { return $this->evenement; }
-    public function setEvenement(?Evenement $evenement): static { $this->evenement = $evenement; return $this; }
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getEvenement(): ?Evenement
+    {
+        return $this->evenement;
+    }
+
+    public function setEvenement(Evenement $evenement): static
+    {
+        $this->evenement = $evenement;
+        return $this;
+    }
 }

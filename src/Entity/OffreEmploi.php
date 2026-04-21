@@ -2,82 +2,44 @@
 
 namespace App\Entity;
 
-use App\Repository\OffreEmploiRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
+
+use App\Repository\OffreEmploiRepository;
 
 #[ORM\Entity(repositoryClass: OffreEmploiRepository::class)]
+#[ORM\Table(name: "offre_emploi")]
 class OffreEmploi
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotBlank(message: 'Le titre est obligatoire.')]
-    #[Assert\Length(
-        min: 3,
-        minMessage: 'Le titre doit contenir au moins {{ limit }} caractères.',
-        max: 255,
-        maxMessage: 'Le titre ne doit pas dépasser {{ limit }} caractères.'
-    )]
-    #[ORM\Column(length: 255)]
-    private ?string $titre = null;
+    #[ORM\Column(nullable: false)]
+    private string $titre;
 
-    #[Assert\NotBlank(message: 'La localisation est obligatoire.')]
-    #[ORM\Column(length: 255)]
-    private ?string $localisation = null;
+    #[ORM\Column(nullable: false)]
+    private string $description;
 
-    #[Assert\NotBlank(message: 'Le type de contrat est obligatoire.')]
-    #[ORM\Column(length: 100)]
-    private ?string $typeContrat = null;
+    #[ORM\Column(nullable: false)]
+    private string $localisation;
 
-    #[Assert\NotBlank(message: 'Le statut est obligatoire.')]
-    #[ORM\Column(length: 100)]
-    private ?string $statut = null;
+    #[ORM\Column(nullable: false)]
+    private string $type_contrat;
 
-    #[Assert\NotNull(message: "La date de publication est obligatoire.")]
-    #[ORM\Column(type: 'date')]
-    private ?\DateTimeInterface $datePublication = null;
+    #[ORM\Column(nullable: false)]
+    private string $date_publication;
 
-    #[Assert\NotNull(message: "La date d'expiration est obligatoire.")]
-    #[ORM\Column(type: 'date')]
-    private ?\DateTimeInterface $dateExpiration = null;
+    #[ORM\Column(nullable: false)]
+    private string $date_expiration;
 
-    #[Assert\NotBlank(message: 'La description est obligatoire.')]
-    #[Assert\Length(
-        min: 10,
-        minMessage: 'La description doit contenir au moins {{ limit }} caractères.'
-    )]
-    #[ORM\Column(type: 'text')]
-    private ?string $description = null;
+    #[ORM\Column(nullable: false)]
+    private string $statut;
 
-    #[ORM\ManyToOne(targetEntity: RH::class)]
-    #[ORM\JoinColumn(name: 'rh_id', referencedColumnName: 'user_id', nullable: false, onDelete: 'CASCADE')]
-    private ?RH $rh = null;
-
-    #[ORM\OneToMany(mappedBy: 'offreEmploi', targetEntity: Candidature::class, orphanRemoval: true, cascade: ['remove'])]
-    private Collection $candidatures;
-
-    public function __construct()
-    {
-        $this->candidatures = new ArrayCollection();
-    }
-
-    #[Assert\Callback]
-    public function validateDates(ExecutionContextInterface $context): void
-    {
-        if ($this->datePublication && $this->dateExpiration) {
-            if ($this->dateExpiration < $this->datePublication) {
-                $context->buildViolation("La date d'expiration doit être postérieure à la date de publication.")
-                    ->atPath('dateExpiration')
-                    ->addViolation();
-            }
-        }
-    }
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "rh_id", referencedColumnName: "user_id")]
+    private ?Rh $rh = null;
 
     public function getId(): ?int
     {
@@ -92,61 +54,7 @@ class OffreEmploi
     public function setTitre(string $titre): static
     {
         $this->titre = $titre;
-        return $this;
-    }
 
-    public function getLocalisation(): ?string
-    {
-        return $this->localisation;
-    }
-
-    public function setLocalisation(string $localisation): static
-    {
-        $this->localisation = $localisation;
-        return $this;
-    }
-
-    public function getTypeContrat(): ?string
-    {
-        return $this->typeContrat;
-    }
-
-    public function setTypeContrat(string $typeContrat): static
-    {
-        $this->typeContrat = $typeContrat;
-        return $this;
-    }
-
-    public function getStatut(): ?string
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(string $statut): static
-    {
-        $this->statut = $statut;
-        return $this;
-    }
-
-    public function getDatePublication(): ?\DateTimeInterface
-    {
-        return $this->datePublication;
-    }
-
-    public function setDatePublication(\DateTimeInterface $datePublication): static
-    {
-        $this->datePublication = $datePublication;
-        return $this;
-    }
-
-    public function getDateExpiration(): ?\DateTimeInterface
-    {
-        return $this->dateExpiration;
-    }
-
-    public function setDateExpiration(\DateTimeInterface $dateExpiration): static
-    {
-        $this->dateExpiration = $dateExpiration;
         return $this;
     }
 
@@ -158,43 +66,80 @@ class OffreEmploi
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 
-    public function getRh(): ?RH
+    public function getLocalisation(): ?string
+    {
+        return $this->localisation;
+    }
+
+    public function setLocalisation(string $localisation): static
+    {
+        $this->localisation = $localisation;
+
+        return $this;
+    }
+
+    public function getTypeContrat(): ?string
+    {
+        return $this->type_contrat;
+    }
+
+    public function setTypeContrat(string $type_contrat): static
+    {
+        $this->type_contrat = $type_contrat;
+
+        return $this;
+    }
+
+    public function getDatePublication(): ?string
+    {
+        return $this->date_publication;
+    }
+
+    public function setDatePublication(string $date_publication): static
+    {
+        $this->date_publication = $date_publication;
+
+        return $this;
+    }
+
+    public function getDateExpiration(): ?string
+    {
+        return $this->date_expiration;
+    }
+
+    public function setDateExpiration(string $date_expiration): static
+    {
+        $this->date_expiration = $date_expiration;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): static
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getRh(): ?Rh
     {
         return $this->rh;
     }
 
-    public function setRh(?RH $rh): static
+    public function setRh(?Rh $rh): static
     {
         $this->rh = $rh;
-        return $this;
-    }
-
-    public function getCandidatures(): Collection
-    {
-        return $this->candidatures;
-    }
-
-    public function addCandidature(Candidature $candidature): static
-    {
-        if (!$this->candidatures->contains($candidature)) {
-            $this->candidatures->add($candidature);
-            $candidature->setOffreEmploi($this);
-        }
 
         return $this;
     }
 
-    public function removeCandidature(Candidature $candidature): static
-    {
-        if ($this->candidatures->removeElement($candidature)) {
-            if ($candidature->getOffreEmploi() === $this) {
-                $candidature->setOffreEmploi(null);
-            }
-        }
-
-        return $this;
-    }
 }

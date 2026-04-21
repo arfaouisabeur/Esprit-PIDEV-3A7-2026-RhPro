@@ -1,10 +1,99 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Inscription Employé - RH Pro{% endblock %}
+{% block title %}Inscription Employé - RH Pro<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addressInput = document.querySelector('textarea[name="registration_candidat[adresse]"]') || document.querySelector('textarea[name="registration_employe[adresse]"]');
+    
+    if (!addressInput) return;
+
+    // Create list container
+    const listWrapper = document.createElement('ul');
+    listWrapper.className = 'autocomplete-list';
+    addressInput.parentNode.classList.add('autocomplete-wrapper');
+    addressInput.parentNode.appendChild(listWrapper);
+    addressInput.setAttribute('autocomplete', 'off');
+
+    let debounceTimer;
+
+    addressInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+        
+        if (query.length < 3) {
+            listWrapper.style.display = 'none';
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5`)
+                .then(r => r.json())
+                .then(data => {
+                    listWrapper.innerHTML = '';
+                    if (data.features && data.features.length > 0) {
+                        data.features.forEach(feature => {
+                            const props = feature.properties;
+                            // Build a clean address string
+                            let addressParts = [];
+                            if (props.name) addressParts.push(props.name);
+                            if (props.city && props.city !== props.name) addressParts.push(props.city);
+                            if (props.state) addressParts.push(props.state);
+                            if (props.country) addressParts.push(props.country);
+                            
+                            const fullAddress = addressParts.join(', ');
+
+                            const li = document.createElement('li');
+                            li.textContent = fullAddress;
+                            li.addEventListener('click', () => {
+                                addressInput.value = fullAddress;
+                                listWrapper.style.display = 'none';
+                            });
+                            listWrapper.appendChild(li);
+                        });
+                        listWrapper.style.display = 'block';
+                    } else {
+                        listWrapper.style.display = 'none';
+                    }
+                })
+                .catch(() => listWrapper.style.display = 'none');
+        }, 300);
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', function(e) {
+        if (e.target !== addressInput && e.target !== listWrapper) {
+            listWrapper.style.display = 'none';
+        }
+    });
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.querySelector('input[type="tel"]') || document.querySelector('input[name="registration_candidat[telephone]"]') || document.querySelector('input[name="registration_employe[telephone]"]');
+    
+    if (phoneInput) {
+        window.intlTelInput(phoneInput, {
+            initialCountry: "auto",
+            geoIpLookup: function(success, failure) {
+                // VPN/IP Detection via ipinfo API
+                fetch("https://ipapi.co/json")
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) { success(data.country_code); })
+                    .catch(function() { success("tn"); }); // Par défaut TN
+            },
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            separateDialCode: true,
+            preferredCountries: ["tn", "fr", "dz", "ma", "ca"]
+        });
+    }
+});
+</script>
+{% endblock %}
 
 {% block body %}
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -533,6 +622,131 @@
     .two-col { grid-template-columns: 1fr; }
     .form-panel { padding: 30px 18px; }
   }
+  /* Autocomplete Styling */
+  .autocomplete-wrapper { position: relative; }
+  .autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid rgba(91,43,130,0.15);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: none;
+  }
+  .autocomplete-list li {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-dark);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    transition: background 0.1s;
+  }
+  .autocomplete-list li:last-child { border-bottom: none; }
+  .autocomplete-list li:hover { background: #f7f4f0; }
+    /* Intl-Tel-Input Styling overrider */
+  .iti { 
+    display: flex !important; 
+    align-items: center;
+    gap: 8px; 
+    width: 100%; 
+  }
+  .iti__flag-container { 
+    position: static !important; 
+    display: flex !important;
+    align-items: center;
+    border: 1.5px solid rgba(91,43,130,0.15) !important;
+    border-radius: 11px !important;
+    background: var(--white) !important;
+    padding: 0 12px !important;
+    height: 45px; /* Match form control height */
+  }
+  .iti__selected-flag { 
+    padding: 0 !important; 
+    background: transparent !important;
+  }
+  .iti input[type=tel] { 
+    padding-left: 16px !important; 
+    flex: 1;
+  }
+  
+  .iti__flag {background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/img/flags.png");}
+  @media (min-resolution: 2x) {
+    .iti__flag {background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/img/flags@2x.png");}
+  }
+
+  /* ── CAPTCHA ── */
+  .captcha-wrapper {
+    margin-top: 20px;
+  }
+
+  .captcha-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border: 1.5px solid rgba(91,43,130,0.15);
+    border-radius: 12px;
+    padding: 10px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .captcha-box:focus-within {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 4px rgba(91,43,130,0.08);
+  }
+
+  .captcha-img {
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid rgba(91,43,130,0.1);
+    background: #1e1e3c;
+    flex-shrink: 0;
+    transition: opacity 0.3s;
+  }
+
+  .captcha-refresh {
+    background: rgba(91,43,130,0.08);
+    border: none;
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--purple);
+    flex-shrink: 0;
+    transition: background 0.2s, transform 0.4s;
+  }
+
+  .captcha-refresh:hover {
+    background: rgba(91,43,130,0.15);
+    transform: rotate(180deg);
+  }
+
+  .captcha-input {
+    flex: 1;
+    padding: 10px 14px !important;
+    border: none !important;
+    box-shadow: none !important;
+    letter-spacing: 4px;
+    font-weight: 700;
+    font-size: 15px;
+    background: transparent !important;
+  }
+
+  .captcha-input:focus {
+    border: none !important;
+    box-shadow: none !important;
+  }
 </style>
 
 <div class="page-shell">
@@ -666,8 +880,7 @@
       }
     }) }}
 
-
-
+  
       {# ── Erreurs globales du formulaire ── #}
       {% if form.vars.errors|length > 0 %}
         <div class="alert alert-danger" role="alert">
@@ -693,7 +906,9 @@
           }) }}
           {# form_errors() génère la liste standard de Symfony #}
           {% if form.prenom.vars.errors|length > 0 %}
-            <div class="form-error-wrapper">{{ form_errors(form.prenom) }}</div>
+            <div style="color: red !important; font-size: 13px !important; margin-top: 5px; display: block !important; font-weight: bold;">
+              {% for error in form.prenom.vars.errors %}{{ error.message }}<br>{% endfor %}
+            </div>
           {% endif %}
         </div>
         <div class="field-group">
@@ -705,7 +920,9 @@
             }
           }) }}
           {% if form.nom.vars.errors|length > 0 %}
-            <div class="form-error-wrapper">{{ form_errors(form.nom) }}</div>
+            <div style="color: red !important; font-size: 13px !important; margin-top: 5px; display: block !important; font-weight: bold;">
+              {% for error in form.nom.vars.errors %}{{ error.message }}<br>{% endfor %}
+            </div>
           {% endif %}
         </div>
       </div>
@@ -722,7 +939,9 @@
           }
         }) }}
         {% if form.email.vars.errors|length > 0 %}
-          <div class="form-error-wrapper">{{ form_errors(form.email) }}</div>
+          <div style="color: red !important; font-size: 13px !important; margin-top: 5px; display: block !important; font-weight: bold;">
+              {% for error in form.email.vars.errors %}{{ error.message }}<br>{% endfor %}
+            </div>
         {% endif %}
       </div>
 
@@ -736,7 +955,9 @@
             }
           }) }}
           {% if form.telephone.vars.errors|length > 0 %}
-            <div class="form-error-wrapper">{{ form_errors(form.telephone) }}</div>
+            <div style="color: red !important; font-size: 13px !important; margin-top: 5px; display: block !important; font-weight: bold;">
+              {% for error in form.telephone.vars.errors %}{{ error.message }}<br>{% endfor %}
+            </div>
           {% endif %}
         </div>
         <div class="field-group">
@@ -748,7 +969,9 @@
             }
           }) }}
           {% if form.adresse.vars.errors|length > 0 %}
-            <div class="form-error-wrapper">{{ form_errors(form.adresse) }}</div>
+            <div style="color: red !important; font-size: 13px !important; margin-top: 5px; display: block !important; font-weight: bold;">
+              {% for error in form.adresse.vars.errors %}{{ error.message }}<br>{% endfor %}
+            </div>
           {% endif %}
         </div>
       </div>
@@ -766,7 +989,9 @@
             }
           }) }}
           {% if form.matricule.vars.errors|length > 0 %}
-            <div class="form-error-wrapper">{{ form_errors(form.matricule) }}</div>
+            <div style="color: red !important; font-size: 13px !important; margin-top: 5px; display: block !important; font-weight: bold;">
+              {% for error in form.matricule.vars.errors %}{{ error.message }}<br>{% endfor %}
+            </div>
           {% endif %}
           <div class="matricule-hint">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -782,7 +1007,9 @@
             }
           }) }}
           {% if form.position.vars.errors|length > 0 %}
-            <div class="form-error-wrapper">{{ form_errors(form.position) }}</div>
+            <div style="color: red !important; font-size: 13px !important; margin-top: 5px; display: block !important; font-weight: bold;">
+              {% for error in form.position.vars.errors %}{{ error.message }}<br>{% endfor %}
+            </div>
           {% endif %}
         </div>
       </div>
@@ -795,7 +1022,9 @@
           }
         }) }}
         {% if form.dateEmbauche.vars.errors|length > 0 %}
-          <div class="form-error-wrapper">{{ form_errors(form.dateEmbauche) }}</div>
+          <div style="color: red !important; font-size: 13px !important; margin-top: 5px; display: block !important; font-weight: bold;">
+              {% for error in form.dateEmbauche.vars.errors %}{{ error.message }}<br>{% endfor %}
+            </div>
         {% endif %}
       </div>
 
@@ -810,7 +1039,9 @@
           }
         }) }}
         {% if form.avatar.vars.errors|length > 0 %}
-          <div class="form-error-wrapper">{{ form_errors(form.avatar) }}</div>
+          <div style="color: red !important; font-size: 13px !important; margin-top: 5px; display: block !important; font-weight: bold;">
+              {% for error in form.avatar.vars.errors %}{{ error.message }}<br>{% endfor %}
+            </div>
         {% endif %}
         <small class="form-text">Format accepté : JPG, PNG, GIF · Max 2 MB</small>
       </div>
@@ -827,9 +1058,33 @@
           }
         }) }}
         {% if form.plainPassword.vars.errors|length > 0 %}
-          <div class="form-error-wrapper">{{ form_errors(form.plainPassword) }}</div>
+          <div style="color: red !important; font-size: 13px !important; margin-top: 5px; display: block !important; font-weight: bold;">
+              {% for error in form.plainPassword.vars.errors %}{{ error.message }}<br>{% endfor %}
+            </div>
         {% endif %}
         <small class="form-text">Minimum 8 caractères, une majuscule, une minuscule et un chiffre.</small>
+      </div>
+      <div class="captcha-wrapper">
+        <label class="field-label" style="margin-bottom: 10px; display:block;">Vérification de sécurité</label>
+        <div class="captcha-box">
+          <img id="captcha-img"
+               src="{{ path('app_captcha_image') }}"
+               alt="captcha"
+               class="captcha-img">
+          <button type="button" class="captcha-refresh" onclick="refreshCaptcha()" title="Rafraîchir">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+          </button>
+          <input type="text"
+                 name="captcha_input"
+                 placeholder="Recopie le code"
+                 class="field-input captcha-input"
+                 required
+                 autocomplete="off"
+                 maxlength="6">
+        </div>
       </div>
 
       <!-- Submit -->
@@ -839,6 +1094,12 @@
           Créer mon profil employé
         </span>
       </button>
+      <div class="mt-3">
+    <a href="{{ path('connect_google', {'type': 'employe'}) }}" class="btn btn-lg btn-outline-danger w-100">
+        <img src="https://www.google.com/favicon.ico" width="20" style="margin-right:8px;">
+        Sign in with Google
+    </a>
+</div>
 
     {{ form_end(form) }}
 
@@ -857,4 +1118,92 @@
 
 </div>{# /page-shell #}
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addressInput = document.querySelector('textarea[name="registration_candidat[adresse]"]') || document.querySelector('textarea[name="registration_employe[adresse]"]');
+    
+    if (!addressInput) return;
+
+    // Create list container
+    const listWrapper = document.createElement('ul');
+    listWrapper.className = 'autocomplete-list';
+    addressInput.parentNode.classList.add('autocomplete-wrapper');
+    addressInput.parentNode.appendChild(listWrapper);
+    addressInput.setAttribute('autocomplete', 'off');
+
+    let debounceTimer;
+
+    addressInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+        
+        if (query.length < 3) {
+            listWrapper.style.display = 'none';
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5`)
+                .then(r => r.json())
+                .then(data => {
+                    listWrapper.innerHTML = '';
+                    if (data.features && data.features.length > 0) {
+                        data.features.forEach(feature => {
+                            const props = feature.properties;
+                            // Build a clean address string
+                            let addressParts = [];
+                            if (props.name) addressParts.push(props.name);
+                            if (props.city && props.city !== props.name) addressParts.push(props.city);
+                            if (props.state) addressParts.push(props.state);
+                            if (props.country) addressParts.push(props.country);
+                            
+                            const fullAddress = addressParts.join(', ');
+
+                            const li = document.createElement('li');
+                            li.textContent = fullAddress;
+                            li.addEventListener('click', () => {
+                                addressInput.value = fullAddress;
+                                listWrapper.style.display = 'none';
+                            });
+                            listWrapper.appendChild(li);
+                        });
+                        listWrapper.style.display = 'block';
+                    } else {
+                        listWrapper.style.display = 'none';
+                    }
+                })
+                .catch(() => listWrapper.style.display = 'none');
+        }, 300);
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', function(e) {
+        if (e.target !== addressInput && e.target !== listWrapper) {
+            listWrapper.style.display = 'none';
+        }
+    });
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.querySelector('input[type="tel"]') || document.querySelector('input[name="registration_candidat[telephone]"]') || document.querySelector('input[name="registration_employe[telephone]"]');
+    
+    if (phoneInput) {
+        window.intlTelInput(phoneInput, {
+            initialCountry: "auto",
+            geoIpLookup: function(success, failure) {
+                // VPN/IP Detection via ipinfo API
+                fetch("https://ipapi.co/json")
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) { success(data.country_code); })
+                    .catch(function() { success("tn"); }); // Par défaut TN
+            },
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            separateDialCode: true,
+            preferredCountries: ["tn", "fr", "dz", "ma", "ca"]
+        });
+    }
+});
+</script>
 {% endblock %}

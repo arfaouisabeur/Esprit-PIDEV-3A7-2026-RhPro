@@ -2,195 +2,95 @@
 
 namespace App\Entity;
 
-use App\Repository\CandidatureRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use App\Repository\CandidatureRepository;
 
 #[ORM\Entity(repositoryClass: CandidatureRepository::class)]
-#[ORM\Table(name: 'candidature')]
 class Candidature
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotNull(message: 'La date de candidature est obligatoire.')]
-    #[ORM\Column(type: 'date', nullable: true)]
-    private ?\DateTimeInterface $dateCandidature = null;
+    #[ORM\Column(type: "date")]
+    private \DateTimeInterface $date_candidature;
 
-    #[Assert\NotBlank(message: 'Le statut est obligatoire.')]
-    #[ORM\Column(type: 'string', length: 20)]
-    private ?string $statut = null;
+    #[ORM\Column(length: 20)]
+    private string $statut;
 
-    #[ORM\Column(type: 'string', length: 500, nullable: true)]
-    private ?string $cvPath = null;
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $cv_path = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $cvOriginalName = null;
-
-    #[ORM\Column(type: 'bigint', nullable: true)]
-    private ?int $cvSize = null;
-
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $cvUploadedAt = null;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $matchScore = null;
-
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $matchUpdatedAt = null;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $signatureRequestId = null;
-
-    #[ORM\Column(type: 'string', length: 50, nullable: true)]
-    private ?string $contractStatus = null;
-
-    #[Assert\NotNull(message: 'Le candidat est obligatoire.')]
-    #[ORM\ManyToOne(targetEntity: Candidat::class, inversedBy: 'candidatures')]
-    #[ORM\JoinColumn(name: 'candidat_id', referencedColumnName: 'user_id', nullable: false, onDelete: 'CASCADE')]
+    // ✅ FIX FK (IMPORTANT)
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "candidat_id", referencedColumnName: "user_id", nullable: false)]
     private ?Candidat $candidat = null;
 
-    #[Assert\NotNull(message: 'L’offre est obligatoire.')]
-    #[ORM\ManyToOne(targetEntity: OffreEmploi::class, inversedBy: 'candidatures')]
-    #[ORM\JoinColumn(name: 'offre_emploi_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    private ?OffreEmploi $offreEmploi = null;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "offre_emploi_id", referencedColumnName: "id", nullable: false)]
+    private ?OffreEmploi $offre_emploi = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $cv_original_name = null;
 
-    public function getDateCandidature(): ?\DateTimeInterface
-    {
-        return $this->dateCandidature;
-    }
+    // ✅ FIX TYPE
+    #[ORM\Column(type: "bigint", nullable: true)]
+    private ?int $cv_size = null;
 
-    public function setDateCandidature(?\DateTimeInterface $dateCandidature): static
-    {
-        $this->dateCandidature = $dateCandidature;
-        return $this;
-    }
+    // ✅ FIX TYPE
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTimeInterface $cv_uploaded_at = null;
 
-    public function getStatut(): ?string
-    {
-        return $this->statut;
-    }
+    #[ORM\Column(nullable: true)]
+    private ?int $match_score = null;
 
-    public function setStatut(?string $statut): static
-    {
-        $this->statut = $statut;
-        return $this;
-    }
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTimeInterface $match_updated_at = null;
 
-    public function getCvPath(): ?string
-    {
-        return $this->cvPath;
-    }
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $signature_request_id = null;
 
-    public function setCvPath(?string $cvPath): static
-    {
-        $this->cvPath = $cvPath;
-        return $this;
-    }
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $contract_status = null;
 
-    public function getCvOriginalName(): ?string
-    {
-        return $this->cvOriginalName;
-    }
+    // ===== GETTERS & SETTERS =====
 
-    public function setCvOriginalName(?string $cvOriginalName): static
-    {
-        $this->cvOriginalName = $cvOriginalName;
-        return $this;
-    }
+    public function getId(): ?int { return $this->id; }
 
-    public function getCvSize(): ?int
-    {
-        return $this->cvSize;
-    }
+    public function getDateCandidature(): ?\DateTimeInterface { return $this->date_candidature; }
+    public function setDateCandidature(\DateTimeInterface $date): static { $this->date_candidature = $date; return $this; }
 
-    public function setCvSize(?int $cvSize): static
-    {
-        $this->cvSize = $cvSize;
-        return $this;
-    }
+    public function getStatut(): ?string { return $this->statut; }
+    public function setStatut(string $statut): static { $this->statut = $statut; return $this; }
 
-    public function getCvUploadedAt(): ?\DateTimeInterface
-    {
-        return $this->cvUploadedAt;
-    }
+    public function getCvPath(): ?string { return $this->cv_path; }
+    public function setCvPath(?string $cv_path): static { $this->cv_path = $cv_path; return $this; }
 
-    public function setCvUploadedAt(?\DateTimeInterface $cvUploadedAt): static
-    {
-        $this->cvUploadedAt = $cvUploadedAt;
-        return $this;
-    }
+    public function getCvOriginalName(): ?string { return $this->cv_original_name; }
+    public function setCvOriginalName(?string $name): static { $this->cv_original_name = $name; return $this; }
 
-    public function getMatchScore(): ?int
-    {
-        return $this->matchScore;
-    }
+    public function getCvSize(): ?int { return $this->cv_size; }
+    public function setCvSize(?int $size): static { $this->cv_size = $size; return $this; }
 
-    public function setMatchScore(?int $matchScore): static
-    {
-        $this->matchScore = $matchScore;
-        return $this;
-    }
+    public function getCvUploadedAt(): ?\DateTimeInterface { return $this->cv_uploaded_at; }
+    public function setCvUploadedAt(?\DateTimeInterface $date): static { $this->cv_uploaded_at = $date; return $this; }
 
-    public function getMatchUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->matchUpdatedAt;
-    }
+    public function getMatchScore(): ?int { return $this->match_score; }
+    public function setMatchScore(?int $score): static { $this->match_score = $score; return $this; }
 
-    public function setMatchUpdatedAt(?\DateTimeInterface $matchUpdatedAt): static
-    {
-        $this->matchUpdatedAt = $matchUpdatedAt;
-        return $this;
-    }
+    public function getMatchUpdatedAt(): ?\DateTimeInterface { return $this->match_updated_at; }
+    public function setMatchUpdatedAt(?\DateTimeInterface $date): static { $this->match_updated_at = $date; return $this; }
 
-    public function getSignatureRequestId(): ?string
-    {
-        return $this->signatureRequestId;
-    }
+    public function getSignatureRequestId(): ?string { return $this->signature_request_id; }
+    public function setSignatureRequestId(?string $id): static { $this->signature_request_id = $id; return $this; }
 
-    public function setSignatureRequestId(?string $signatureRequestId): static
-    {
-        $this->signatureRequestId = $signatureRequestId;
-        return $this;
-    }
+    public function getContractStatus(): ?string { return $this->contract_status; }
+    public function setContractStatus(?string $status): static { $this->contract_status = $status; return $this; }
 
-    public function getContractStatus(): ?string
-    {
-        return $this->contractStatus;
-    }
+    public function getCandidat(): ?Candidat { return $this->candidat; }
+    public function setCandidat(Candidat $candidat): static { $this->candidat = $candidat; return $this; }
 
-    public function setContractStatus(?string $contractStatus): static
-    {
-        $this->contractStatus = $contractStatus;
-        return $this;
-    }
-
-    public function getCandidat(): ?Candidat
-    {
-        return $this->candidat;
-    }
-
-    public function setCandidat(?Candidat $candidat): static
-    {
-        $this->candidat = $candidat;
-        return $this;
-    }
-
-    public function getOffreEmploi(): ?OffreEmploi
-    {
-        return $this->offreEmploi;
-    }
-
-    public function setOffreEmploi(?OffreEmploi $offreEmploi): static
-    {
-        $this->offreEmploi = $offreEmploi;
-        return $this;
-    }
+    public function getOffreEmploi(): ?OffreEmploi { return $this->offre_emploi; }
+    public function setOffreEmploi(OffreEmploi $offre): static { $this->offre_emploi = $offre; return $this; }
 }

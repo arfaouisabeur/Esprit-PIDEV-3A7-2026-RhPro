@@ -1,107 +1,43 @@
-{% extends 'rh/admin_base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block page_title %}Gestion des Projets{% endblock %}
-{% block page_subtitle %}Liste de tous vos projets en cours, terminés ou en attente{% endblock %}
+{% block title %}Projet index{% endblock %}
 
-{% block admin_content %}
-<div class="admin-card" style="padding: 0; margin-top: -1rem; min-height: 400px;">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 p-4 border-bottom">
-        <div class="d-flex align-items-center gap-4">
-            <div class="admin-card-title mb-0">
-                <div class="admin-card-title-icon"><i class="bi bi-diagram-3-fill"></i></div>
-                Projets
-            </div>
-            
-            <!-- AJAX Search Form -->
-            <form id="ajaxSearchForm" method="get" action="{{ path('app_projet_index') }}" class="d-flex gap-2">
-                <div class="input-group" style="background: #f1f5f9; border-radius: 50px; overflow: hidden; padding: 2px 2px 2px 15px; width: 350px; position: relative;">
-                    <input type="text" id="searchInput" name="q" value="{{ q|default('') }}" class="form-control border-0 bg-transparent" style="box-shadow: none; font-size: 0.9rem;" placeholder="Rechercher un projet...">
-                    
-                    <div id="searchSpinner" class="spinner-border spinner-border-sm text-primary" role="status" style="display: none; position: absolute; right: 60px; top: 12px; z-index: 10;">
-                        <span class="visually-hidden">Chargement...</span>
-                    </div>
+{% block body %}
+    <h1>Projet index</h1>
 
-                    <button type="submit" class="btn btn-purple border-0" style="border-radius: 50px; padding: 0.5rem 1rem; background: var(--purple-dark);">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </div>
-                
-                <select id="statutSelect" name="statut" class="form-select border-0 bg-light" style="border-radius: 50px; font-size: 0.85rem; padding-left: 1rem; cursor: pointer; background-color: #f1f5f9 !important; width: 180px;">
-                    <option value="">Tous les statuts</option>
-                    <option value="en_attente" {% if statut|default('') == 'en_attente' %}selected{% endif %}>À Faire</option>
-                    <option value="en_cours" {% if statut|default('') == 'en_cours' %}selected{% endif %}>En cours</option>
-                    <option value="termine" {% if statut|default('') == 'termine' %}selected{% endif %}>Terminé</option>
-                    <option value="annule" {% if statut|default('') == 'annule' %}selected{% endif %}>Annulé</option>
-                </select>
-            </form>
-        </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Statut</th>
+                <th>Description</th>
+                <th>Date_debut</th>
+                <th>Date_fin</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for projet in projets %}
+            <tr>
+                <td>{{ projet.id }}</td>
+                <td>{{ projet.titre }}</td>
+                <td>{{ projet.statut }}</td>
+                <td>{{ projet.description }}</td>
+                <td>{{ projet.dateDebut }}</td>
+                <td>{{ projet.dateFin }}</td>
+                <td>
+                    <a href="{{ path('app_projet_show', {'id': projet.id}) }}">show</a>
+                    <a href="{{ path('app_projet_edit', {'id': projet.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-        <div class="d-flex gap-2">
-            <!-- Main Statistics Report Button (New primary action) -->
-            <a href="{{ path('app_projet_export_stats') }}" class="btn-light-purple d-inline-flex align-items-center gap-2" style="text-decoration: none;" target="_blank">
-                <i class="bi bi-file-earmark-bar-graph"></i> Générer le Rapport PDF
-            </a>
-            
-            <a href="{{ path('app_projet_new') }}" class="btn-purple d-inline-flex align-items-center gap-2" style="text-decoration: none;">
-                <i class="bi bi-plus-lg"></i> Nouveau Projet
-            </a>
-        </div>
-    </div>
-    
-    <div id="tableContainer" class="admin-table-container mx-4 mt-4 mb-4" style="transition: opacity 0.2s ease;">
-        {% include 'projet/_projet_table.html.twig' %}
-    </div>
-</div>
-{% endblock %}
-
-{% block javascripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // === AJAX Search Implementation ===
-    const searchForm = document.getElementById('ajaxSearchForm');
-    const searchInput = document.getElementById('searchInput');
-    const statutSelect = document.getElementById('statutSelect');
-    const tableContainer = document.getElementById('tableContainer');
-    const searchSpinner = document.getElementById('searchSpinner');
-    
-    let debounceTimer;
-
-    function performSearch() {
-        const query = searchInput.value;
-        const status = statutSelect.value;
-        const url = new URL(window.location.href);
-        
-        url.searchParams.set('q', query);
-        url.searchParams.set('statut', status);
-        window.history.replaceState({}, '', url);
-
-        searchSpinner.style.display = 'block';
-        tableContainer.style.opacity = '0.5';
-
-        fetch(url.toString(), {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(response => response.text())
-        .then(html => {
-            tableContainer.innerHTML = html;
-        })
-        .finally(() => {
-            searchSpinner.style.display = 'none';
-            tableContainer.style.opacity = '1';
-        });
-    }
-
-    searchInput.addEventListener('input', () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(performSearch, 400);
-    });
-
-    statutSelect.addEventListener('change', performSearch);
-
-    searchForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        performSearch();
-    });
-});
-</script>
+    <a href="{{ path('app_projet_new') }}">Create new</a>
 {% endblock %}

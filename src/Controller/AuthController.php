@@ -7,13 +7,17 @@ use App\Entity\Candidat;
 use App\Entity\Employe;
 use App\Form\RegistrationCandidatType;
 use App\Form\RegistrationEmployeType;
+use App\Service\CaptchaService;
 use Doctrine\ORM\EntityManagerInterface;
+use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Form\FormError;
+use League\OAuth2\Client\Provider\GoogleUser;
 
 class AuthController extends AbstractController
 {
@@ -37,7 +41,8 @@ class AuthController extends AbstractController
     public function registerCandidat(
         Request $request,
         EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        CaptchaService $captchaService
     ): Response {
 
         if ($this->getUser()) {
@@ -50,12 +55,21 @@ class AuthController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            // ✅ Vérification captcha
+            $captchaInput = $request->request->get('captcha_input');
+            if (!$captchaService->verify($captchaInput)) {
+                $this->addFlash('error', 'Code captcha invalide. Veuillez réessayer.');
+                return $this->render('auth/register_candidat.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
+
             $existingUser = $entityManager->getRepository(User::class)->findOneBy([
                 'email' => $user->getEmail()
             ]);
 
             if ($existingUser) {
-                $this->addFlash('error', 'Cet email est déjà utilisé.');
+                $form->get('email')->addError(new FormError('Cet email est déjà utilisé.'));
                 return $this->render('auth/register_candidat.html.twig', [
                     'form' => $form->createView(),
                 ]);
@@ -69,7 +83,6 @@ class AuthController extends AbstractController
             $user->setMotDePasse($hashedPassword);
 
             $avatarFile = $form->get('avatar')->getData();
-
             if ($avatarFile) {
                 $newFilename = 'avatar_user_temp_' . uniqid() . '.' . $avatarFile->guessExtension();
                 $avatarFile->move(
@@ -90,7 +103,6 @@ class AuthController extends AbstractController
                 $oldPath = $this->getParameter('kernel.project_dir') . '/public/' . $user->getAvatarPath();
                 $newFilename = 'avatar_user_' . $user->getId() . '.' . pathinfo($oldPath, PATHINFO_EXTENSION);
                 $newPath = $this->getParameter('kernel.project_dir') . '/public/uploads/avatars/' . $newFilename;
-
                 if (file_exists($oldPath)) {
                     rename($oldPath, $newPath);
                     $user->setAvatarPath('uploads/avatars/' . $newFilename);
@@ -115,7 +127,8 @@ class AuthController extends AbstractController
     public function registerEmploye(
         Request $request,
         EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        CaptchaService $captchaService
     ): Response {
 
         if ($this->getUser()) {
@@ -128,12 +141,21 @@ class AuthController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            // ✅ Vérification captcha
+            $captchaInput = $request->request->get('captcha_input');
+            if (!$captchaService->verify($captchaInput)) {
+                $this->addFlash('error', 'Code captcha invalide. Veuillez réessayer.');
+                return $this->render('auth/register_employe.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
+
             $existingUser = $entityManager->getRepository(User::class)->findOneBy([
                 'email' => $user->getEmail()
             ]);
 
             if ($existingUser) {
-                $this->addFlash('error', 'Cet email est déjà utilisé.');
+                $form->get('email')->addError(new FormError('Cet email est déjà utilisé.'));
                 return $this->render('auth/register_employe.html.twig', [
                     'form' => $form->createView(),
                 ]);
@@ -144,7 +166,7 @@ class AuthController extends AbstractController
             ]);
 
             if ($existingMatricule) {
-                $this->addFlash('error', 'Ce matricule est déjà utilisé.');
+                $form->get('matricule')->addError(new FormError('Ce matricule est déjà utilisé.'));
                 return $this->render('auth/register_employe.html.twig', [
                     'form' => $form->createView(),
                 ]);
@@ -153,14 +175,11 @@ class AuthController extends AbstractController
             $user->setRole(User::ROLE_EMPLOYE);
             $user->setStatut('actif');
 
-            // plainPassword est forcément non-null ici car isValid() = true
-            // et NotBlank est défini dans le FormType
             $plainPassword = $form->get('plainPassword')->getData();
             $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
             $user->setMotDePasse($hashedPassword);
 
             $avatarFile = $form->get('avatar')->getData();
-
             if ($avatarFile) {
                 $newFilename = 'avatar_user_temp_' . uniqid() . '.' . $avatarFile->guessExtension();
                 $avatarFile->move(
@@ -182,7 +201,6 @@ class AuthController extends AbstractController
                 $oldPath = $this->getParameter('kernel.project_dir') . '/public/' . $user->getAvatarPath();
                 $newFilename = 'avatar_user_' . $user->getId() . '.' . pathinfo($oldPath, PATHINFO_EXTENSION);
                 $newPath = $this->getParameter('kernel.project_dir') . '/public/uploads/avatars/' . $newFilename;
-
                 if (file_exists($oldPath)) {
                     rename($oldPath, $newPath);
                     $user->setAvatarPath('uploads/avatars/' . $newFilename);
@@ -201,6 +219,23 @@ class AuthController extends AbstractController
         return $this->render('auth/register_employe.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    // ✅ Google OAuth corrigé — redirige vers Google
+    #[Route('/connect/google', name: 'connect_google')]
+    public function connectGoogle(ClientRegistry $clientRegistry): Response
+    {
+        return $clientRegistry
+            ->getClient('google')
+            ->redirect(['email', 'profile']);
+    }
+
+    // ✅ Callback Google — traité par le Security Authenticator automatiquement
+    #[Route('/connect/google/check', name: 'connect_google_check')]
+    public function connectGoogleCheck(): Response
+    {
+        // Géré automatiquement par GoogleAuthenticator
+        return $this->redirectToRoute('app_home');
     }
 
     #[Route('/logout', name: 'app_logout')]

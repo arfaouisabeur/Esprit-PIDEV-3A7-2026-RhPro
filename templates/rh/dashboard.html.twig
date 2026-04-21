@@ -1,78 +1,9 @@
-{% extends 'base.html.twig' %}
+{% extends 'rh/layout_rh.html.twig' %}
 
 {% block title %}Dashboard RH - RH Pro{% endblock %}
 
-{% block body %}
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3 col-lg-2 sidebar">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link active" href="{{ path('app_rh_dashboard') }}">
-                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_rh_candidats') }}">
-                        <i class="bi bi-people me-2"></i>Candidats
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_rh_employes') }}">
-                        <i class="bi bi-briefcase me-2"></i>Employés
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-briefcase me-2"></i>Projets
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-briefcase me-2"></i>Evenements
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-briefcase me-2"></i>Condidatures
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-briefcase me-2"></i>Offres
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-briefcase me-2"></i>Paiements
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-briefcase me-2"></i>Contrats
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-briefcase me-2"></i>Conge
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-briefcase me-2"></i>Services
-                    </a>
-                </li>
+{% block rh_content %}
 
-                <li class="nav-item mt-3">
-                    <small class="text-muted px-3">Gérer</small>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Main Content -->
-        <div class="col-md-9 col-lg-10 py-4">
-            <div class="container">
                 <h2 class="fw-bold mb-4">
                     <i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard RH
                 </h2>
@@ -264,8 +195,4 @@
                     </div>
                 </div>
 
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}

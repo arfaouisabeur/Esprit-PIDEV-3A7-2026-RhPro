@@ -29,37 +29,32 @@ class ProfileCandidatType extends AbstractType
                 'constraints' => [
                     new NotBlank(message: 'Le prénom est obligatoire'),
                     new Length(min: 2, max: 120),
-                ],
-                'attr' => ['class' => 'form-control']
+                ]
             ])
             ->add('nom', TextType::class, [
                 'label' => 'Nom',
                 'constraints' => [
                     new NotBlank(message: 'Le nom est obligatoire'),
                     new Length(min: 2, max: 120),
-                ],
-                'attr' => ['class' => 'form-control']
+                ]
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'constraints' => [
                     new NotBlank(message: 'L\'email est obligatoire'),
                     new Email(message: 'Veuillez entrer un email valide'),
-                ],
-                'attr' => ['class' => 'form-control']
+                ]
             ])
             ->add('telephone', TelType::class, [
                 'label' => 'Téléphone',
                 'required' => false,
                 'constraints' => [
                     new Regex(pattern: '/^[0-9+\\s]{8,}$/', message: 'Veuillez entrer un numéro de téléphone valide'),
-                ],
-                'attr' => ['class' => 'form-control']
+                ]
             ])
             ->add('adresse', TextareaType::class, [
                 'label' => 'Adresse',
-                'required' => false,
-                'attr' => ['class' => 'form-control', 'rows' => 3]
+                'required' => false
             ])
             ->add('avatar', FileType::class, [
                 'label' => 'Photo de profil',
@@ -77,14 +72,12 @@ class ProfileCandidatType extends AbstractType
             ->add('niveauEtude', TextType::class, [
                 'label' => 'Niveau d\'études',
                 'required' => false,
-                'mapped' => false,
-                'attr' => ['class' => 'form-control']
+                'mapped' => false
             ])
             ->add('experience', IntegerType::class, [
                 'label' => 'Années d\'expérience',
                 'required' => false,
-                'mapped' => false,
-                'attr' => ['class' => 'form-control', 'min' => 0]
+                'mapped' => false
             ]);
     }
 

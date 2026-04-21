@@ -16,7 +16,6 @@ final class ReponseController extends AbstractController
     #[Route(name: 'app_reponse_index', methods: ['GET'])]
     public function index(EntityManagerInterface $entityManager): Response
     {
-         $this->denyAccessUnlessGranted('ROLE_RH'); // ← ici
         $reponses = $entityManager
             ->getRepository(Reponse::class)
             ->findAll();

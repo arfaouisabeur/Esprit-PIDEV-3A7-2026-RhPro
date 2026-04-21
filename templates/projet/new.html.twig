@@ -1,28 +1,11 @@
-{% extends 'rh/admin_base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}Nouveau Projet{% endblock %}
+{% block title %}New Projet{% endblock %}
 
-{% block page_title %}Nouveau Projet{% endblock %}
-{% block page_subtitle %}Inaugurez une nouvelle initiative et assignez une équipe{% endblock %}
+{% block body %}
+    <h1>Create new Projet</h1>
 
-{% block admin_content %}
-<div class="row justify-content-center">
-    <div class="col-lg-10">
-        <div class="admin-card">
-            <div class="d-flex align-items-center gap-3 mb-4">
-                <a href="{{ path('app_projet_index') }}" class="btn-action-circle outline">
-                    <i class="bi bi-arrow-left"></i>
-                </a>
-                <div class="admin-card-title mb-0">
-                    <div class="admin-card-title-icon"><i class="bi bi-plus-circle-fill"></i></div>
-                    Création de projet
-                </div>
-            </div>
+    {{ include('projet/_form.html.twig') }}
 
-            <div class="p-2">
-                {{ include('projet/_form.html.twig') }}
-            </div>
-        </div>
-    </div>
-</div>
+    <a href="{{ path('app_projet_index') }}">back to list</a>
 {% endblock %}

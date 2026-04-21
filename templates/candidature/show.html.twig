@@ -1,190 +1,62 @@
 {% extends 'base.html.twig' %}
-{% block title %}Détail candidature{% endblock %}
 
-{% block styles %}
-<style>
-    body { background:#F7F4FB !important; }
-    .pg { max-width:1060px; margin:0 auto; padding:36px 24px 60px; }
-    .btn-op { display:inline-flex; align-items:center; gap:7px; padding:9px 18px; border-radius:99px; background:transparent; color:#6D2269; border:1.5px solid #6D2269; font-size:13px; font-weight:600; text-decoration:none; transition:all .22s; }
-    .btn-op:hover { background:#6D2269; color:#fff; }
-    .hero { background:linear-gradient(135deg,#4E1A4B,#6D2269); border-radius:18px; padding:28px 32px; color:#fff; margin-bottom:22px; display:flex; align-items:center; gap:18px; position:relative; overflow:hidden; }
-    .hero::after { content:''; position:absolute; top:-30px; right:-30px; width:140px; height:140px; background:rgba(255,255,255,0.05); border-radius:50%; }
-    .hero-av { width:60px; height:60px; background:rgba(255,255,255,0.18); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; flex-shrink:0; }
-    .hero-name { font-size:20px; font-weight:700; margin-bottom:4px; }
-    .hero-sub  { font-size:14px; opacity:.8; }
-    .layout { display:grid; grid-template-columns:1fr 300px; gap:20px; align-items:start; }
-    .cs { background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(109,34,105,0.08); border:1px solid rgba(109,34,105,0.07); overflow:hidden; margin-bottom:18px; }
-    .csh { padding:14px 20px; border-bottom:1px solid rgba(109,34,105,0.07); font-size:14px; font-weight:700; color:#4E1A4B; display:flex; align-items:center; gap:8px; }
-    .csb { padding:18px 20px; }
-    .info-r { display:flex; align-items:center; gap:12px; padding:11px 18px; border-bottom:1px solid rgba(109,34,105,0.05); }
-    .info-r:last-child { border-bottom:none; }
-    .info-ico { width:32px; height:32px; background:#F7F4FB; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#6D2269; font-size:14px; flex-shrink:0; }
-    .info-lb { font-size:10px; color:#6c757d; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
-    .info-v  { font-size:13px; font-weight:600; }
-    .bs { display:inline-flex; align-items:center; gap:4px; padding:5px 12px; border-radius:99px; font-size:12px; font-weight:600; }
-    .bs-wait { background:#fff8e1; color:#f59e0b; }
-    .bs-ok   { background:#e8f5e9; color:#22c55e; }
-    .bs-no   { background:#fce8e8; color:#ef4444; }
-    .bs-rev  { background:#ede9fe; color:#7c3aed; }
-    .cv-pill { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:99px; background:rgba(109,34,105,0.07); color:#6D2269; font-size:13px; font-weight:600; text-decoration:none; transition:all .22s; }
-    .cv-pill:hover { background:#6D2269; color:#fff; }
-    .stat-btn { display:inline-flex; align-items:center; gap:6px; padding:9px 16px; border-radius:99px; font-size:13px; font-weight:600; border:1.5px solid; cursor:pointer; transition:all .22s; background:transparent; }
-    .sb-wait { color:#f59e0b; border-color:#f59e0b; } .sb-wait:hover { background:#f59e0b; color:#fff; }
-    .sb-int  { color:#7c3aed; border-color:#7c3aed; } .sb-int:hover { background:#7c3aed; color:#fff; }
-    .sb-ok   { color:#22c55e; border-color:#22c55e; } .sb-ok:hover { background:#22c55e; color:#fff; }
-    .sb-no   { color:#ef4444; border-color:#ef4444; } .sb-no:hover { background:#ef4444; color:#fff; }
-    @media(max-width:800px){ .layout{grid-template-columns:1fr;} }
-</style>
-{% endblock %}
+{% block title %}Candidature{% endblock %}
 
 {% block body %}
-<div class="pg">
+    <h1>Candidature</h1>
 
-    <div style="margin-bottom:20px;">
-        <a href="{{ path('app_candidature_index') }}" class="btn-op"><i class="bi bi-arrow-left"></i> Retour à la liste</a>
-    </div>
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ candidature.id }}</td>
+            </tr>
+            <tr>
+                <th>Date_candidature</th>
+                <td>{{ candidature.dateCandidature ? candidature.dateCandidature|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Statut</th>
+                <td>{{ candidature.statut }}</td>
+            </tr>
+            <tr>
+                <th>Cv_path</th>
+                <td>{{ candidature.cvPath }}</td>
+            </tr>
+            <tr>
+                <th>Cv_original_name</th>
+                <td>{{ candidature.cvOriginalName }}</td>
+            </tr>
+            <tr>
+                <th>Cv_size</th>
+                <td>{{ candidature.cvSize }}</td>
+            </tr>
+            <tr>
+                <th>Cv_uploaded_at</th>
+                <td>{{ candidature.cvUploadedAt ? candidature.cvUploadedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Match_score</th>
+                <td>{{ candidature.matchScore }}</td>
+            </tr>
+            <tr>
+                <th>Match_updated_at</th>
+                <td>{{ candidature.matchUpdatedAt ? candidature.matchUpdatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Signature_request_id</th>
+                <td>{{ candidature.signatureRequestId }}</td>
+            </tr>
+            <tr>
+                <th>Contract_status</th>
+                <td>{{ candidature.contractStatus }}</td>
+            </tr>
+        </tbody>
+    </table>
 
-    <div class="hero">
-        <div class="hero-av">
-            {% if candidature.candidat is not null and candidature.candidat.user is not null %}
-                {{ candidature.candidat.user.prenom|first|upper }}{{ candidature.candidat.user.nom|first|upper }}
-            {% else %}?{% endif %}
-        </div>
-        <div>
-            <div class="hero-name">
-                {% if candidature.candidat is not null and candidature.candidat.user is not null %}
-                    {{ candidature.candidat.user.nom }} {{ candidature.candidat.user.prenom }}
-                {% else %}Candidat #{{ candidature.id }}{% endif %}
-            </div>
-            <div class="hero-sub">
-                <i class="bi bi-envelope" style="margin-right:5px;"></i>
-                {% if candidature.candidat is not null and candidature.candidat.user is not null %}
-                    {{ candidature.candidat.user.email }}
-                {% endif %}
-            </div>
-        </div>
-    </div>
+    <a href="{{ path('app_candidature_index') }}">back to list</a>
 
-    <div class="layout">
-        <div>
-            {# Offre liée #}
-            <div class="cs">
-                <div class="csh"><i class="bi bi-briefcase" style="color:#6D2269;"></i> Offre concernée</div>
-                <div class="csb" style="display:flex;align-items:center;gap:14px;">
-                    <div style="width:46px;height:46px;background:#F7F4FB;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#6D2269;font-size:20px;flex-shrink:0;">
-                        <i class="bi bi-briefcase-fill"></i>
-                    </div>
-                    <div style="flex:1;">
-                        <div style="font-weight:700;font-size:15px;color:#4E1A4B;">
-                            {% if candidature.offreEmploi is not null %}{{ candidature.offreEmploi.titre }}{% else %}—{% endif %}
-                        </div>
-                        <div style="font-size:13px;color:#6c757d;margin-top:3px;">
-                            {% if candidature.offreEmploi is not null %}
-                                {{ candidature.offreEmploi.typeContrat }} — {{ candidature.offreEmploi.localisation }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% if candidature.offreEmploi is not null %}
-                    <a href="{{ path('app_offre_emploi_show', {'id': candidature.offreEmploi.id}) }}" class="btn-op" style="padding:7px 14px;font-size:12px;">
-                        Voir l'offre
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
+    <a href="{{ path('app_candidature_edit', {'id': candidature.id}) }}">edit</a>
 
-            {# Lettre de motivation #}
-            {% if candidature.lettreMotivation is defined and candidature.lettreMotivation %}
-            <div class="cs">
-                <div class="csh"><i class="bi bi-chat-text" style="color:#6D2269;"></i> Lettre de motivation</div>
-                <div class="csb" style="font-size:15px;line-height:1.8;color:#333;">{{ candidature.lettreMotivation|nl2br }}</div>
-            </div>
-            {% endif %}
-
-            {# Changer statut #}
-            <div class="cs">
-                <div class="csh"><i class="bi bi-sliders" style="color:#6D2269;"></i> Changer le statut</div>
-                <div class="csb">
-                    <form method="post" action="{{ path('app_candidature_statut', {'id': candidature.id}) }}">
-                        <input type="hidden" name="_token" value="{{ csrf_token('statut'~candidature.id) }}">
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                            <button type="submit" name="statut" value="en_attente" class="stat-btn sb-wait"><i class="bi bi-hourglass-split"></i> En attente</button>
-                            <button type="submit" name="statut" value="entretien"  class="stat-btn sb-int"><i class="bi bi-camera-video"></i> Entretien</button>
-                            <button type="submit" name="statut" value="acceptee"   class="stat-btn sb-ok"><i class="bi bi-check-circle"></i> Accepter</button>
-                            <button type="submit" name="statut" value="refusee"    class="stat-btn sb-no"><i class="bi bi-x-circle"></i> Refuser</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div>
-            <div class="cs">
-                <div class="csh"><i class="bi bi-info-circle" style="color:#6D2269;"></i> Résumé</div>
-
-                <div class="info-r">
-                    <div class="info-ico"><i class="bi bi-calendar3"></i></div>
-                    <div>
-                        <div class="info-lb">Date de candidature</div>
-                        <div class="info-v">{{ candidature.dateCandidature ? candidature.dateCandidature|date('d/m/Y') : '—' }}</div>
-                    </div>
-                </div>
-
-                <div class="info-r">
-                    <div class="info-ico"><i class="bi bi-flag-fill"></i></div>
-                    <div>
-                        <div class="info-lb">Statut actuel</div>
-                        <div class="info-v">
-                            {% set sl = (candidature.statut ?? '')|lower|replace({' ':'_','é':'e'}) %}
-                            {% if sl in ['acceptee','accepted'] %}
-                                <span class="bs bs-ok"><i class="bi bi-check-circle-fill"></i>Acceptée</span>
-                            {% elseif sl in ['refusee','rejected'] %}
-                                <span class="bs bs-no"><i class="bi bi-x-circle-fill"></i>Refusée</span>
-                            {% elseif sl in ['entretien','interview'] %}
-                                <span class="bs bs-rev"><i class="bi bi-camera-video-fill"></i>Entretien</span>
-                            {% else %}
-                                <span class="bs bs-wait"><i class="bi bi-hourglass-split"></i>En attente</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                {% if candidature.matchScore is not null %}
-                <div class="info-r">
-                    <div class="info-ico"><i class="bi bi-bar-chart-fill"></i></div>
-                    <div>
-                        <div class="info-lb">Score de matching</div>
-                        <div class="info-v" style="color:#6D2269;">{{ candidature.matchScore }}%</div>
-                    </div>
-                </div>
-                {% endif %}
-
-                <div class="info-r">
-                    <div class="info-ico"><i class="bi bi-file-earmark-pdf-fill"></i></div>
-                    <div>
-                        <div class="info-lb">CV fourni</div>
-                        <div class="info-v">
-                            {% if candidature.cvPath %}
-                                <a href="{{ asset('uploads/cv/'~candidature.cvPath) }}" target="_blank" class="cv-pill">
-                                    <i class="bi bi-file-earmark-pdf-fill"></i>
-                                    {{ candidature.cvOriginalName ?? 'Télécharger CV' }}
-                                </a>
-                            {% else %}Non fourni{% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                {% if candidature.contractStatus is defined and candidature.contractStatus %}
-                <div class="info-r">
-                    <div class="info-ico"><i class="bi bi-file-earmark-check-fill"></i></div>
-                    <div>
-                        <div class="info-lb">Statut contrat</div>
-                        <div class="info-v">{{ candidature.contractStatus }}</div>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-</div>
+    {{ include('candidature/_delete_form.html.twig') }}
 {% endblock %}
