@@ -4,115 +4,38 @@ namespace App\Form;
 
 use App\Entity\Contract;
 use App\Entity\Employe;
+use App\Entity\Rh;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\CallbackTransformer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 class ContractType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $isEdit = $options['edit_mode'] ?? false;
-
         $builder
-
-            ->add('date_debut', DateType::class, [
-                'widget' => 'single_text',
-                'attr' => ['class' => 'form-control'],
-                'constraints' => [
-                    new Assert\NotBlank(message: 'Start date is required')
-                ]
-            ])
-
-            ->add('date_fin', DateType::class, [
-                'widget' => 'single_text',
-                'required' => true,
-                'attr' => ['class' => 'form-control'],
-                'constraints' => [
-                    new Assert\NotBlank(message: 'End date is required')
-                ]
-            ])
-
-            ->add('type', TextType::class, [
-                'attr' => ['class' => 'form-control'],
-                'required' => true,
-                'constraints' => [
-                    new Assert\NotBlank(message: 'Type is required'),
-                    new Assert\Length(min: 3, minMessage: 'Type must be at least 3 characters')
-                ]
-            ])
-
-            ->add('statut', ChoiceType::class, [
-                'choices' => [
-                    'Actif' => 'ACTIF',
-                    'Terminé' => 'TERMINE',
-                    'Suspendu' => 'SUSPENDU'
-                ],
-                'placeholder' => 'Choisir statut',
-                'required' => true,
-                'attr' => ['class' => 'form-select'],
-                'constraints' => [
-                    new Assert\NotBlank(message: 'Status is required')
-                ]
-            ])
-
-            ->add('salaire_base', NumberType::class, [
-                'attr' => ['class' => 'form-control'],
-                'required' => true,
-                'constraints' => [
-                    new Assert\NotBlank(message: 'Salary is required'),
-                    new Assert\Positive(message: 'Salary must be positive')
-                ]
-            ])
-
-            ->add('description', TextType::class, [
-                'required' => false,
-                'attr' => ['class' => 'form-control'],
-                'constraints' => [
-                    new Assert\Length(max: 255, maxMessage: 'Description too long')
-                ]
-            ]);
-
-        if (!$isEdit) {
-            $builder->add('employe', EntityType::class, [
+            ->add('date_debut')
+            ->add('date_fin')
+            ->add('type')
+            ->add('statut')
+            ->add('salaire_base')
+            ->add('description')
+            ->add('employe', EntityType::class, [
                 'class' => Employe::class,
-                'choice_label' => function ($emp) {
-                    return $emp->getMatricule() . ' | ' . $emp->getUser()->getFullName();
-                },
-                'placeholder' => 'Choisir employé',
-                'required' => true,
-                'attr' => ['class' => 'form-select'],
-                'constraints' => [
-                    new Assert\NotBlank(message: 'Employee is required')
-                ]
-            ]);
-        }
-
-        $builder->get('date_debut')
-            ->addModelTransformer(new CallbackTransformer(
-                fn($value) => $value ? new \DateTime($value) : null,
-                fn($value) => $value ? $value->format('Y-m-d') : null
-            ));
-
-        $builder->get('date_fin')
-            ->addModelTransformer(new CallbackTransformer(
-                fn($value) => $value ? new \DateTime($value) : null,
-                fn($value) => $value ? $value->format('Y-m-d') : null
-            ));
+                'choice_label' => 'id',
+            ])
+            ->add('rh', EntityType::class, [
+                'class' => Rh::class,
+                'choice_label' => 'id',
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Contract::class,
-            'edit_mode' => false
         ]);
     }
 }

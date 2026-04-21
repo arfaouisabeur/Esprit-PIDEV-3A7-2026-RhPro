@@ -48,6 +48,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 50)]
     private ?string $statut = 'actif';
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $googleId = null;
+
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: Candidat::class, cascade: ['persist', 'remove'])]
     private ?Candidat $candidat = null;
 
@@ -237,5 +240,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isRH(): bool
     {
         return $this->role === self::ROLE_RH;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(?string $googleId): self
+    {
+        $this->googleId = $googleId;
+        return $this;
     }
 }

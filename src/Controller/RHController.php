@@ -18,12 +18,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-use App\Entity\Evenement;
-use App\Entity\EventParticipation;
-use App\Repository\EvenementRepository;
-use App\Repository\EventParticipationRepository;
-use Symfony\Component\HttpFoundation\JsonResponse;
-
 #[Route('/rh')]
 #[IsGranted('ROLE_RH')]
 class RHController extends AbstractController
@@ -46,16 +40,16 @@ class RHController extends AbstractController
         $search = $request->query->get('search', '');
         $sort = $request->query->get('sort', 'id');
         $order = $request->query->get('order', 'DESC');
-
+        
         $queryBuilder = $entityManager->getRepository(User::class)->createQueryBuilder('u')
             ->where('u.role = :role')
             ->setParameter('role', 'CANDIDAT');
-
+        
         if ($search) {
             $queryBuilder->andWhere('u.nom LIKE :search OR u.prenom LIKE :search OR u.email LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
         }
-
+        
         $queryBuilder->orderBy('u.' . $sort, $order);
         $candidats = $queryBuilder->getQuery()->getResult();
 
@@ -80,17 +74,17 @@ class RHController extends AbstractController
         $search = $request->query->get('search', '');
         $sort = $request->query->get('sort', 'id');
         $order = $request->query->get('order', 'DESC');
-
+        
         $queryBuilder = $entityManager->getRepository(User::class)->createQueryBuilder('u')
             ->innerJoin('u.employe', 'e')
             ->where('u.role = :role')
             ->setParameter('role', 'EMPLOYE');
-
+        
         if ($search) {
             $queryBuilder->andWhere('u.nom LIKE :search OR u.prenom LIKE :search OR u.email LIKE :search OR e.matricule LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
         }
-
+        
         $queryBuilder->orderBy('u.' . $sort, $order);
         $employes = $queryBuilder->getQuery()->getResult();
 
@@ -114,13 +108,13 @@ class RHController extends AbstractController
     {
         $users = [];
         $title = '';
-
+        
         if ($type === 'candidats' || $type === 'all') {
             $candidats = $entityManager->getRepository(User::class)->findAllCandidats();
             $users = array_merge($users, $candidats);
             $title = 'Liste des Candidats';
         }
-
+        
         if ($type === 'employes' || $type === 'all') {
             $employes = $entityManager->getRepository(User::class)->findAllEmployes();
             $users = array_merge($users, $employes);
@@ -137,7 +131,7 @@ class RHController extends AbstractController
         $options->set('defaultFont', 'Arial');
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isRemoteEnabled', true);
-
+        
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'landscape');
@@ -154,14 +148,14 @@ class RHController extends AbstractController
     {
         $response = new StreamedResponse(function() use ($type, $entityManager) {
             $handle = fopen('php://output', 'w');
-
+            
             // UTF-8 BOM for Excel
             fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
-
+            
             if ($type === 'candidats' || $type === 'all') {
                 fputcsv($handle, ['CANDIDATS']);
                 fputcsv($handle, ['ID', 'Prénom', 'Nom', 'Email', 'Téléphone', 'Adresse', 'Niveau d\'études', 'Expérience (années)']);
-
+                
                 $candidats = $entityManager->getRepository(User::class)->findAllCandidats();
                 foreach ($candidats as $user) {
                     fputcsv($handle, [
@@ -177,11 +171,11 @@ class RHController extends AbstractController
                 }
                 fputcsv($handle, []);
             }
-
+            
             if ($type === 'employes' || $type === 'all') {
                 fputcsv($handle, ['EMPLOYÉS']);
                 fputcsv($handle, ['ID', 'Prénom', 'Nom', 'Email', 'Téléphone', 'Adresse', 'Matricule', 'Poste', 'Date d\'embauche']);
-
+                
                 $employes = $entityManager->getRepository(User::class)->findAllEmployes();
                 foreach ($employes as $user) {
                     $employe = $user->getEmploye();
@@ -198,7 +192,7 @@ class RHController extends AbstractController
                     ]);
                 }
             }
-
+            
             fclose($handle);
         });
 
@@ -282,7 +276,7 @@ class RHController extends AbstractController
             $this->addFlash('success', 'Utilisateur créé avec succès. Mot de passe temporaire: ' . $tempPassword);
             return $this->redirectToRoute('app_rh_dashboard');
         }
-
+            
 
         return $this->render('rh/user_form.html.twig', [
             'form' => $form->createView(),
@@ -402,65 +396,4 @@ public function toggleStatut(User $user, EntityManagerInterface $em, Request $re
             'user' => $user,
         ]);
     }
-    // ================= 🔥 EVENTS (ADDED ONLY) =================
-
-#[Route('/stats', name: 'app_rh_stats')]
-public function statsPage(
-    EntityManagerInterface $em,
-    EvenementRepository $evenementRepo,
-    EventParticipationRepository $participationRepo
-): Response {
-    $today = new \DateTime();
-
-    $evenements = $evenementRepo->findAll();
-    $participations = $participationRepo->findAll();
-
-    $evAVenir = $evEnCours = $evTermines = 0;
-
-    foreach ($evenements as $ev) {
-        $d = $ev->getDateDebut();
-        $f = $ev->getDateFin();
-
-        if ($d > $today) $evAVenir++;
-        elseif ($d <= $today && $f >= $today) $evEnCours++;
-        else $evTermines++;
-    }
-
-    return $this->render('rh/statistiques.html.twig', [
-        'evenements' => $evenements,
-        'participations' => $participations,
-        'evAVenir' => $evAVenir,
-        'evEnCours' => $evEnCours,
-        'evTermines' => $evTermines,
-    ]);
-}
-
-#[Route('/statistiques', name: 'app_rh_statistiques')]
-public function statistiques(
-    EntityManagerInterface $em,
-    EvenementRepository $evenementRepo,
-    EventParticipationRepository $participationRepo
-): JsonResponse {
-    $today = new \DateTime();
-
-    $evenements = $evenementRepo->findAll();
-
-    $aVenir = $enCours = $termines = 0;
-
-    foreach ($evenements as $ev) {
-        $d = $ev->getDateDebut();
-        $f = $ev->getDateFin();
-
-        if ($d > $today) $aVenir++;
-        elseif ($d <= $today && $f >= $today) $enCours++;
-        else $termines++;
-    }
-
-    return new JsonResponse([
-        'totalEvenements' => count($evenements),
-        'evAVenir' => $aVenir,
-        'evEnCours' => $enCours,
-        'evTermines' => $termines,
-    ]);
-}
 }

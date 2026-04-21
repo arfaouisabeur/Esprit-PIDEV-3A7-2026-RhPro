@@ -3,49 +3,35 @@
 namespace App\Form;
 
 use App\Entity\DemandeService;
+use App\Entity\Employe;
 use App\Entity\TypeService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class DemandeServiceType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('titre')
+            ->add('description')
+            ->add('date_demande')
+            ->add('statut')
+            ->add('etape_workflow')
+            ->add('date_derniere_etape')
+            ->add('priorite')
+            ->add('deadline_reponse')
+            ->add('sla_depasse')
+            ->add('pdf_path')
+            ->add('employe', EntityType::class, [
+                'class' => Employe::class,
+                'choice_label' => 'id',
+            ])
             ->add('type', EntityType::class, [
                 'class' => TypeService::class,
-                'choice_label' => 'nom',
-                'placeholder' => 'Choisir un type de service...',
-                'label' => false,
-                'required' => true,
-                'constraints' => [
-                    new NotBlank(message: 'Choisissez une famille puis une catégorie de service.'),
-                ],
-                // Used by the UI to build the "famille -> catégorie" UX
-                'choice_attr' => static function (?TypeService $t): array {
-                    if (!$t) return [];
-                    return [
-                        'data-categorie' => (string) $t->getCategorie(),
-                    ];
-                },
-                'attr' => [
-                    'id' => 'js-type-service',
-                ],
-            ])
-            ->add('description', null, [
-                'required' => false,
-                'label' => false,
-            ])
-            ->add('priorite', null, [
-                'required' => false,
-                'label' => false,
-            ])
-            ->add('pdf_path', null, [
-                'required' => false,
-                'label' => false,
+                'choice_label' => 'id',
             ])
         ;
     }

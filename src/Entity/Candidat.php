@@ -3,20 +3,20 @@
 namespace App\Entity;
 
 use App\Repository\CandidatRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CandidatRepository::class)]
 #[ORM\Table(name: 'candidat')]
 class Candidat
 {
+    /*
     #[ORM\Id]
     #[ORM\Column(type: 'bigint')]
     private ?int $userId = null;
-
+*/
+     #[ORM\Id]
     #[ORM\OneToOne(inversedBy: 'candidat', targetEntity: User::class)]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private ?User $user = null;
 
     #[ORM\Column(type: 'string', length: 120, nullable: true)]
@@ -24,15 +24,7 @@ class Candidat
 
     #[ORM\Column(type: 'integer', options: ['default' => 0])]
     private int $experience = 0;
-
-    #[ORM\OneToMany(mappedBy: 'candidat', targetEntity: Candidature::class, orphanRemoval: true, cascade: ['remove'])]
-    private Collection $candidatures;
-
-    public function __construct()
-    {
-        $this->candidatures = new ArrayCollection();
-    }
-
+/*
     public function getUserId(): ?int
     {
         return $this->userId;
@@ -43,6 +35,7 @@ class Candidat
         $this->userId = $userId;
         return $this;
     }
+        */
 
     public function getUser(): ?User
     {
@@ -52,11 +45,9 @@ class Candidat
     public function setUser(?User $user): self
     {
         $this->user = $user;
-
         if ($user !== null) {
             $this->userId = $user->getId();
         }
-
         return $this;
     }
 
@@ -79,32 +70,6 @@ class Candidat
     public function setExperience(int $experience): self
     {
         $this->experience = $experience;
-        return $this;
-    }
-
-    public function getCandidatures(): Collection
-    {
-        return $this->candidatures;
-    }
-
-    public function addCandidature(Candidature $candidature): self
-    {
-        if (!$this->candidatures->contains($candidature)) {
-            $this->candidatures->add($candidature);
-            $candidature->setCandidat($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCandidature(Candidature $candidature): self
-    {
-        if ($this->candidatures->removeElement($candidature)) {
-            if ($candidature->getCandidat() === $this) {
-                $candidature->setCandidat(null);
-            }
-        }
-
         return $this;
     }
 }

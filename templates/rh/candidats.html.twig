@@ -1,34 +1,9 @@
-{% extends 'base.html.twig' %}
+{% extends 'rh/layout_rh.html.twig' %}
 
 {% block title %}Gestion Candidats - RH{% endblock %}
 
-{% block body %}
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3 col-lg-2 sidebar">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_rh_dashboard') }}">
-                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="{{ path('app_rh_candidats') }}">
-                        <i class="bi bi-people me-2"></i>Candidats
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_rh_employes') }}">
-                        <i class="bi bi-briefcase me-2"></i>Employés
-                    </a>
-                </li>
-            </ul>
-        </div>
+{% block rh_content %}
 
-        <!-- Main Content -->
-        <div class="col-md-9 col-lg-10 py-4">
-            <div class="container">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="fw-bold mb-0">
                         <i class="bi bi-people me-2 text-primary"></i>Gestion des Candidats
@@ -81,10 +56,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

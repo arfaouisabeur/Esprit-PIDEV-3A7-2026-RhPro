@@ -565,6 +565,72 @@
   @media (max-width: 480px) {
     .form-panel { padding: 36px 22px; }
   }
+
+  /* ── CAPTCHA ── */
+  .captcha-wrapper {
+    margin-top: 20px;
+  }
+
+  .captcha-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border: 1.5px solid rgba(91,43,130,0.15);
+    border-radius: 12px;
+    padding: 10px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .captcha-box:focus-within {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 4px rgba(91,43,130,0.08);
+  }
+
+  .captcha-img {
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid rgba(91,43,130,0.1);
+    background: #1e1e3c;
+    flex-shrink: 0;
+    transition: opacity 0.3s;
+  }
+
+  .captcha-refresh {
+    background: rgba(91,43,130,0.08);
+    border: none;
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--purple);
+    flex-shrink: 0;
+    transition: background 0.2s, transform 0.4s;
+  }
+
+  .captcha-refresh:hover {
+    background: rgba(91,43,130,0.15);
+    transform: rotate(180deg);
+  }
+
+  .captcha-input {
+    flex: 1;
+    padding: 10px 14px !important;
+    border: none !important;
+    box-shadow: none !important;
+    letter-spacing: 4px;
+    font-weight: 700;
+    font-size: 15px;
+    background: transparent !important;
+  }
+
+  .captcha-input:focus {
+    border: none !important;
+    box-shadow: none !important;
+  }
 </style>
 
 <div class="page-shell">
@@ -739,15 +805,39 @@
 
       <!-- Forgot password link -->
       <div class="form-meta">
-        <a href="#" class="forgot-link" onclick="toggleForgot(event)">Mot de passe oublié ?</a>
+        <a href="{{ path('app_forgot_password') }}" class="forgot-link" onclick="toggleForgot(event)">Mot de passe oublié ?</a>
       </div>
 
       <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+      <div class="captcha-wrapper">
+        <label class="field-label" style="margin-bottom: 10px; display:block;">Vérification de sécurité</label>
+        <div class="captcha-box">
+          <img id="captcha-img"
+               src="{{ path('app_captcha_image') }}"
+               alt="captcha"
+               class="captcha-img">
+          <button type="button" class="captcha-refresh" onclick="refreshCaptcha()" title="Rafraîchir">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+          </button>
+          <input type="text"
+                 name="captcha_input"
+                 placeholder="Recopie le code"
+                 class="field-input captcha-input"
+                 required
+                 autocomplete="off"
+                 maxlength="6">
+        </div>
+      </div>
+      
 
       <!-- Submit -->
       <button type="submit" class="btn-login">
         <span>Se connecter</span>
       </button>
+ 
 
     </form>
 
@@ -768,6 +858,294 @@
       </div>
       <div class="msg-area" id="forgotMsg"></div>
     </div>
+
+    {# templates/security/login.html.twig #}
+
+{# ... ton formulaire login existant ... #}
+
+<hr>
+<!-- ── FACE LOGIN SECTION ── -->
+<style>
+  .face-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0 20px;
+  }
+  .face-divider::before,
+  .face-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(91,43,130,0.15);
+  }
+  .face-divider span {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .btn-face {
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    border: 1.5px solid rgba(91,43,130,0.25);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--purple);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .btn-face:hover {
+    background: rgba(91,43,130,0.06);
+    border-color: var(--purple);
+    box-shadow: 0 4px 16px rgba(91,43,130,0.12);
+  }
+
+  /* Webcam panel — caché par défaut */
+  .webcam-panel {
+    display: none;
+    margin-top: 18px;
+    background: #faf8ff;
+    border: 1.5px solid rgba(91,43,130,0.12);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .webcam-frame {
+    position: relative;
+    display: inline-block;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(91,43,130,0.15);
+  }
+
+  .webcam-frame video {
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    border-radius: 12px;
+  }
+
+  /* Coin décoratif sur la vidéo */
+  .webcam-frame::before,
+  .webcam-frame::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: var(--gold);
+    border-style: solid;
+    z-index: 2;
+  }
+  .webcam-frame::before {
+    top: 8px; left: 8px;
+    border-width: 2px 0 0 2px;
+    border-radius: 4px 0 0 0;
+  }
+  .webcam-frame::after {
+    bottom: 8px; right: 8px;
+    border-width: 0 2px 2px 0;
+    border-radius: 0 0 4px 0;
+  }
+
+  /* Scanning animation */
+  .scan-line {
+    display: none;
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    z-index: 3;
+    animation: scanAnim 1.5s ease-in-out infinite;
+  }
+
+  @keyframes scanAnim {
+    0%   { top: 10%; }
+    50%  { top: 85%; }
+    100% { top: 10%; }
+  }
+
+  .btn-capture {
+    margin-top: 16px;
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 6px 20px rgba(91,43,130,0.3);
+    letter-spacing: 0.04em;
+  }
+  .btn-capture:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 28px rgba(91,43,130,0.4);
+  }
+  .btn-capture:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .face-status {
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    min-height: 20px;
+    color: var(--purple);
+  }
+  .face-status.success { color: #2e7d32; }
+  .face-status.error   { color: #c62828; }
+</style>
+
+<!-- Séparateur -->
+<div class="face-divider"><span>Ou connexion biométrique</span></div>
+
+<!-- Bouton pour ouvrir la webcam -->
+<button type="button" class="btn-face" id="btnOpenCamera">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+    <circle cx="12" cy="13" r="4"/>
+  </svg>
+  Se connecter avec mon visage
+</button>
+
+<!-- Panel webcam (caché au départ) -->
+<div class="webcam-panel" id="webcamPanel">
+
+  <div class="webcam-frame">
+    <video id="webcam" autoplay playsinline muted></video>
+    <div class="scan-line" id="scanLine"></div>
+  </div>
+
+  <button type="button" class="btn-capture" id="btnCapture">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
+    </svg>
+    Analyser mon visage
+  </button>
+
+  <p class="face-status" id="faceStatus"></p>
+</div>
+
+<script>
+(function () {
+  const btnOpen   = document.getElementById('btnOpenCamera');
+  const panel     = document.getElementById('webcamPanel');
+  const video     = document.getElementById('webcam');
+  const btnCapture= document.getElementById('btnCapture');
+  const status    = document.getElementById('faceStatus');
+  const scanLine  = document.getElementById('scanLine');
+  let stream      = null;
+
+  // ── Ouvrir la caméra au clic ──
+  btnOpen.addEventListener('click', async () => {
+    if (panel.style.display === 'block') {
+      // Fermer
+      stopCamera();
+      panel.style.display = 'none';
+      btnOpen.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+        Se connecter avec mon visage`;
+      return;
+    }
+
+    // Ouvrir
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      panel.style.display = 'block';
+      status.textContent = '📷 Positionnez votre visage dans le cadre';
+      status.className = 'face-status';
+      btnOpen.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        Fermer la caméra`;
+    } catch (err) {
+      status.textContent = '❌ Caméra non accessible';
+      status.className = 'face-status error';
+      panel.style.display = 'block';
+    }
+  });
+
+  // ── Capturer et envoyer ──
+  btnCapture.addEventListener('click', async () => {
+    btnCapture.disabled = true;
+    status.textContent = '🔄 Analyse en cours...';
+    status.className = 'face-status';
+    scanLine.style.display = 'block';
+
+    // Capturer le frame
+    const canvas = document.createElement('canvas');
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const imageBase64 = canvas.toDataURL('image/jpeg');
+
+    try {
+      const response = await fetch('/face-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageBase64 })
+      });
+
+      const result = await response.json();
+      scanLine.style.display = 'none';
+
+      if (result.success) {
+        status.textContent = '✅ Visage reconnu ! Connexion en cours...';
+        status.className = 'face-status success';
+        stopCamera();
+        setTimeout(() => { window.location.href = result.redirect; }, 1000);
+      } else {
+        status.textContent = '❌ Visage non reconnu. Réessayez.';
+        status.className = 'face-status error';
+        btnCapture.disabled = false;
+      }
+
+    } catch (e) {
+      scanLine.style.display = 'none';
+      status.textContent = '❌ Erreur de connexion au serveur.';
+      status.className = 'face-status error';
+      btnCapture.disabled = false;
+    }
+  });
+
+  function stopCamera() {
+    if (stream) {
+      stream.getTracks().forEach(t => t.stop());
+      stream = null;
+    }
+  }
+})();
+</script>
+
 
     <!-- Accent line -->
     <div class="accent-line"></div>
@@ -834,6 +1212,12 @@
     .then(r => r.json())
     .then(data => { document.getElementById('otpMsg').textContent = data.message; })
     .catch(() => { document.getElementById('otpMsg').textContent = 'Une erreur s\'est produite.'; });
+  }
+  function refreshCaptcha() {
+    const img = document.getElementById('captcha-img');
+    img.style.opacity = '0.4';
+    img.src = '{{ path('app_captcha_image') }}?r=' + Math.random();
+    img.onload = () => { img.style.opacity = '1'; };
   }
 </script>
 
