@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CongeTt index{% endblock %}
+
+{% block body %}
+    <h1>CongeTt index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Type_conge</th>
+                <th>Date_debut</th>
+                <th>Date_fin</th>
+                <th>Statut</th>
+                <th>Description</th>
+                <th>Document_path</th>
+                <th>Ocr_verified</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for conge_tt in conge_tts %}
+            <tr>
+                <td>{{ conge_tt.id }}</td>
+                <td>{{ conge_tt.typeConge }}</td>
+                <td>{{ conge_tt.dateDebut ? conge_tt.dateDebut|date('Y-m-d') : '' }}</td>
+                <td>{{ conge_tt.dateFin ? conge_tt.dateFin|date('Y-m-d') : '' }}</td>
+                <td>{{ conge_tt.statut }}</td>
+                <td>{{ conge_tt.description }}</td>
+                <td>{{ conge_tt.documentPath }}</td>
+                <td>{{ conge_tt.ocrVerified ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('app_conge_tt_show', {'id': conge_tt.id}) }}">show</a>
+                    <a href="{{ path('app_conge_tt_edit', {'id': conge_tt.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_conge_tt_new') }}">Create new</a>
+{% endblock %}

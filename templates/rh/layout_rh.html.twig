@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block navbar %}
+    {# We intentionally leave the navbar empty for the RH layout #}
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex" style="min-height: 100vh;">
+        <!-- Sidebar container -->
+        <div class="bg-white border-end shadow-sm flex-shrink-0" id="rh-sidebar-wrapper">
+            {% include 'partials/sidebar_rh.html.twig' %}
+        </div>
+
+        <!-- Main content area -->
+        <div class="flex-grow-1 bg-light overflow-auto" id="rh-content-wrapper" style="height: 100vh;">
+            
+            <!-- Mobile sidebar toggle button (Optional if needed later) -->
+            <div class="d-md-none p-3 border-bottom bg-white d-flex align-items-center">
+                <button class="btn btn-outline-primary me-3" id="sidebarToggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#rhSidebarOffcanvas">
+                    <i class="bi bi-list"></i>
+                </button>
+                <span class="fs-5 fw-bold text-primary">Espace RH</span>
+            </div>
+
+            <!-- Page Specific Flashes inside content area since base.html.twig usually puts flashes in the general body -->
+            <div class="p-3">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+
+            <!-- Page Content -->
+            <div class="container-fluid p-4">
+                {% block rh_content %}
+                {% endblock %}
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Mobile Offcanvas for Sidebar -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="rhSidebarOffcanvas" aria-labelledby="rhSidebarLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title text-primary fw-bold" id="rhSidebarLabel">
+                <i class="bi bi-shield-lock-fill me-2"></i>Espace RH
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fermer"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            {% include 'partials/sidebar_rh.html.twig' %}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+    <style>
+        /* Hide sidebar completely on very small screens, rely on offcanvas */
+        @media (max-width: 768px) {
+            #rh-sidebar-wrapper {
+                display: none !important;
+            }
+        }
+        /* Disable base template flashes since we render them inside the flex layout */
+        main.flex-grow-1 > .alert { display: none !important; }
+    </style>
+{% endblock %}

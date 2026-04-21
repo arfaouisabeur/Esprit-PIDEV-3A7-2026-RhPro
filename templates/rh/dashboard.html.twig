@@ -1,0 +1,198 @@
+{% extends 'rh/layout_rh.html.twig' %}
+
+{% block title %}Dashboard RH - RH Pro{% endblock %}
+
+{% block rh_content %}
+
+                <h2 class="fw-bold mb-4">
+                    <i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard RH
+                </h2>
+
+                <!-- Stats Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-primary bg-opacity-10 rounded p-3">
+                                        <i class="bi bi-people fs-3 text-primary"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">Total Candidats</h6>
+                                    <h3 class="fw-bold mb-0">{{ candidats|length }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-success bg-opacity-10 rounded p-3">
+                                        <i class="bi bi-briefcase fs-3 text-success"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">Total Employés</h6>
+                                    <h3 class="fw-bold mb-0">{{ employes|length }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-info bg-opacity-10 rounded p-3">
+                                        <i class="bi bi-people-fill fs-3 text-info"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="text-muted mb-1">Total Utilisateurs</h6>
+                                    <h3 class="fw-bold mb-0">{{ candidats|length + employes|length }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Candidats Table -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-people me-2"></i>Derniers Candidats</h5>
+                        <a href="{{ path('app_rh_candidats') }}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Email</th>
+                                        <th>Téléphone</th>
+                                        <th>Niveau</th>
+                                        <th>Exp.</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for candidat in candidats|slice(0, 5) %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if candidat.avatarPath %}
+                                                        <img src="{{ asset(candidat.avatarPath) }}" class="avatar me-2" alt="">
+                                                    {% else %}
+                                                        <div class="avatar bg-primary text-white d-flex align-items-center justify-content-center me-2">
+                                                            {{ candidat.prenom|first|upper }}
+                                                        </div>
+                                                    {% endif %}
+                                                    <span>{{ candidat.fullName }}</span>
+                                                </div>
+                                            </td>
+                                            <td>{{ candidat.email }}</td>
+                                            <td>{{ candidat.telephone ?: '-' }}</td>
+                                            <td>{{ candidat.candidat.niveauEtude|default('-') }}</td>
+                                            <td>{{ candidat.candidat.experience|default(0) }} ans</td>
+                                            <td>
+                                                <a href="{{ path('app_rh_user_view', {'id': candidat.id}) }}" class="btn btn-sm btn-outline-info">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                             <form method="post" action="{{ path('app_rh_user_toggle_statut', {'id': candidat.id}) }}" class="d-inline"
+      onsubmit="return confirm('Changer le statut de ce candidat ?')">
+    <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ candidat.id) }}">
+    <input type="hidden" name="redirect" value="candidats">  {# ✅ ajout #}
+    {% if candidat.statut == 'actif' %}
+        <button class="btn btn-sm btn-outline-warning" title="Désactiver">
+            <i class="bi bi-person-check"></i>
+        </button>
+    {% else %}
+        <button class="btn btn-sm btn-danger" title="Activer">
+            <i class="bi bi-person-x text-white"></i>
+        </button>
+    {% endif %}
+</form>
+                                            </td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4 text-muted">Aucun candidat inscrit</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employés Table -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-briefcase me-2"></i>Derniers Employés</h5>
+                        <a href="{{ path('app_rh_employes') }}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Email</th>
+                                        <th>Matricule</th>
+                                        <th>Poste</th>
+                                        <th>Date Emb.</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for employe in employes|slice(0, 5) %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if employe.avatarPath %}
+                                                        <img src="{{ asset(employe.avatarPath) }}" class="avatar me-2" alt="">
+                                                    {% else %}
+                                                        <div class="avatar bg-success text-white d-flex align-items-center justify-content-center me-2">
+                                                            {{ employe.prenom|first|upper }}
+                                                        </div>
+                                                    {% endif %}
+                                                    <span>{{ employe.fullName }}</span>
+                                                </div>
+                                            </td>
+                                            <td>{{ employe.email }}</td>
+                                            <td><span class="badge bg-secondary">{{ employe.employe.matricule|default('-') }}</span></td>
+                                            <td>{{ employe.employe.position|default('-') }}</td>
+                                           <td>{{ employe.employe is not null and employe.employe.dateEmbauche is not null ? employe.employe.dateEmbauche|date('d/m/Y') : '-' }}</td>
+                                            <td>
+                                                <a href="{{ path('app_rh_user_view', {'id': employe.id}) }}" class="btn btn-sm btn-outline-info">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                         <form method="post" action="{{ path('app_rh_user_toggle_statut', {'id': employe.id}) }}" class="d-inline"
+      onsubmit="return confirm('Changer le statut de cet employé ?')">
+    <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ employe.id) }}">
+    <input type="hidden" name="redirect" value="employes">  {# ✅ ajout #}
+    {% if employe.statut == 'actif' %}
+        <button class="btn btn-sm btn-outline-warning" title="Désactiver">
+            <i class="bi bi-person-check"></i>
+        </button>
+    {% else %}
+        <button class="btn btn-sm btn-danger" title="Activer">
+            <i class="bi bi-person-x text-white"></i>
+        </button>
+    {% endif %}
+</form>
+                                            </td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4 text-muted">Aucun employé inscrit</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+{% endblock %}

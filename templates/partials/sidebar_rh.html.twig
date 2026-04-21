@@ -1,0 +1,77 @@
+<div class="sidebar d-flex flex-column p-3" style="width: 280px;">
+    <a href="{{ path('app_rh_dashboard') }}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none" style="color: var(--primary-color);">
+        <i class="bi bi-shield-lock-fill fs-4 me-2"></i>
+        <span class="fs-5 fw-bold">Espace RH</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="{{ path('app_rh_dashboard') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_rh_dashboard' %}active{% else %}text-dark{% endif %}">
+                <i class="bi bi-speedometer2 me-2"></i> Tableau de bord
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_rh_employes') }}" class="nav-link {% if app.request.attributes.get('_route') in ['app_rh_employes', 'app_rh_user_view', 'app_rh_user_edit'] and 'employe' in app.request.uri %}active{% else %}text-dark{% endif %}">
+                <i class="bi bi-people me-2"></i> Employés
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_rh_candidats') }}" class="nav-link {% if app.request.attributes.get('_route') in ['app_rh_candidats', 'app_rh_user_view', 'app_rh_user_edit'] and 'candidat' in app.request.uri %}active{% else %}text-dark{% endif %}">
+                <i class="bi bi-person-lines-fill me-2"></i> Candidats
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_conge_tt_index') }}" class="nav-link {% if 'app_conge_tt' in app.request.attributes.get('_route') %}active{% else %}text-dark{% endif %}">
+                <i class="bi bi-calendar-event me-2"></i> Congés
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_evenement_index') }}" class="nav-link {% if 'app_evenement' in app.request.attributes.get('_route') %}active{% else %}text-dark{% endif %}">
+                <i class="bi bi-calendar-star me-2"></i> Événements
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_offre_emploi_index') }}" class="nav-link {% if 'app_offre_emploi' in app.request.attributes.get('_route') %}active{% else %}text-dark{% endif %}">
+                <i class="bi bi-briefcase me-2"></i> Offres d'emploi
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_candidature_index') }}" class="nav-link {% if 'app_candidature' in app.request.attributes.get('_route') %}active{% else %}text-dark{% endif %}">
+                <i class="bi bi-file-earmark-person me-2"></i> Candidatures
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_contract_index') }}" class="nav-link {% if 'app_contract' in app.request.attributes.get('_route') %}active{% else %}text-dark{% endif %}">
+                <i class="bi bi-file-earmark-text me-2"></i> Contrats
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_salaire_index') }}" class="nav-link {% if 'app_salaire' in app.request.attributes.get('_route') %}active{% else %}text-dark{% endif %}">
+                <i class="bi bi-cash-stack me-2"></i> Salaires
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_tache_index') }}" class="nav-link {% if 'app_tache' in app.request.attributes.get('_route') %}active{% else %}text-dark{% endif %}">
+                <i class="bi bi-list-check me-2"></i> Tâches
+            </a>
+        </li>
+    </ul>
+    <hr>
+    <div class="dropdown">
+        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+            {% if app.user and app.user.avatarPath %}
+                <img src="{{ asset(app.user.avatarPath) }}" alt="" width="32" height="32" class="rounded-circle me-2">
+            {% else %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-2" style="width:32px; height:32px; background:var(--primary-color); color:white; font-size:14px; font-weight:bold;">
+                    {% if app.user %}{{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}{% else %}RH{% endif %}
+                </div>
+            {% endif %}
+            <strong>{% if app.user %}{{ app.user.prenom }} {{ app.user.nom }}{% else %}Compte RH{% endif %}</strong>
+        </a>
+        <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
+            <li><a class="dropdown-item" href="{{ path('app_home') }}">Retour à l'accueil</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{{ path('app_logout') }}">Déconnexion</a></li>
+        </ul>
+    </div>
+</div>

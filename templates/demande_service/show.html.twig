@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DemandeService{% endblock %}
+
+{% block body %}
+    <h1>DemandeService</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ demande_service.id }}</td>
+            </tr>
+            <tr>
+                <th>Titre</th>
+                <td>{{ demande_service.titre }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ demande_service.description }}</td>
+            </tr>
+            <tr>
+                <th>Date_demande</th>
+                <td>{{ demande_service.dateDemande }}</td>
+            </tr>
+            <tr>
+                <th>Statut</th>
+                <td>{{ demande_service.statut }}</td>
+            </tr>
+            <tr>
+                <th>Etape_workflow</th>
+                <td>{{ demande_service.etapeWorkflow }}</td>
+            </tr>
+            <tr>
+                <th>Date_derniere_etape</th>
+                <td>{{ demande_service.dateDerniereEtape }}</td>
+            </tr>
+            <tr>
+                <th>Priorite</th>
+                <td>{{ demande_service.priorite }}</td>
+            </tr>
+            <tr>
+                <th>Deadline_reponse</th>
+                <td>{{ demande_service.deadlineReponse }}</td>
+            </tr>
+            <tr>
+                <th>Sla_depasse</th>
+                <td>{{ demande_service.slaDepasse }}</td>
+            </tr>
+            <tr>
+                <th>Pdf_path</th>
+                <td>{{ demande_service.pdfPath }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_demande_service_index') }}">back to list</a>
+
+    <a href="{{ path('app_demande_service_edit', {'id': demande_service.id}) }}">edit</a>
+
+    {{ include('demande_service/_delete_form.html.twig') }}
+{% endblock %}

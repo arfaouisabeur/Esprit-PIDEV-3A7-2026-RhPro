@@ -1,0 +1,99 @@
+{% extends 'rh/layout_rh.html.twig' %}
+
+{% block title %}{{ title }} - RH{% endblock %}
+
+{% block rh_content %}
+
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-person-gear me-2"></i>{{ title }}
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            {{ form_label(form.prenom) }}
+                                            {{ form_widget(form.prenom) }}
+                                            {{ form_errors(form.prenom) }}
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            {{ form_label(form.nom) }}
+                                            {{ form_widget(form.nom) }}
+                                            {{ form_errors(form.nom) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        {{ form_label(form.email) }}
+                                        {{ form_widget(form.email) }}
+                                        {{ form_errors(form.email) }}
+                                    </div>
+
+                                    <div class="mb-3">
+                                        {{ form_label(form.telephone) }}
+                                        {{ form_widget(form.telephone) }}
+                                        {{ form_errors(form.telephone) }}
+                                    </div>
+
+                                    <div class="mb-3">
+                                        {{ form_label(form.adresse) }}
+                                        {{ form_widget(form.adresse) }}
+                                        {{ form_errors(form.adresse) }}
+                                    </div>
+
+                                    <div class="mb-3">
+                                        {{ form_label(form.role) }}
+                                        {{ form_widget(form.role) }}
+                                        {{ form_errors(form.role) }}
+                                    </div>
+
+                                    {% if form.niveauEtude is defined %}
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                {{ form_label(form.niveauEtude) }}
+                                                {{ form_widget(form.niveauEtude) }}
+                                                {{ form_errors(form.niveauEtude) }}
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                {{ form_label(form.experience) }}
+                                                {{ form_widget(form.experience) }}
+                                                {{ form_errors(form.experience) }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    {% if form.matricule is defined %}
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                {{ form_label(form.matricule) }}
+                                                {{ form_widget(form.matricule) }}
+                                                {{ form_errors(form.matricule) }}
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                {{ form_label(form.position) }}
+                                                {{ form_widget(form.position) }}
+                                                {{ form_errors(form.position) }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ path('app_rh_dashboard') }}" class="btn btn-secondary">
+                                            <i class="bi bi-x-lg me-2"></i>Annuler
+                                        </a>
+                                        <button class="btn btn-primary" type="submit">
+                                            <i class="bi bi-check-lg me-2"></i>Enregistrer
+                                        </button>
+                                    </div>
+
+                                {{ form_end(form) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+{% endblock %}

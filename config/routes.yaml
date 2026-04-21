@@ -8,4 +8,12 @@
 #   bin/console debug:router
 
 controllers:
-    resource: routing.controllers
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+face_login:
+    path: /face-login
+    controller: App\Controller\FaceLoginController::faceLogin
+    methods: [POST]   

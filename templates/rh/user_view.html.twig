@@ -1,0 +1,83 @@
+{% extends 'rh/layout_rh.html.twig' %}
+
+{% block title %}Détails Utilisateur - RH{% endblock %}
+
+{% block rh_content %}
+
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="bi bi-person me-2"></i>Détails Utilisateur</h5>
+                                <span class="badge badge-role badge-{{ user.role|lower }}">{{ user.role }}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center mb-4">
+                                    {% if user.avatarPath %}
+                                        <img src="{{ asset(user.avatarPath) }}" class="avatar-large mb-3" alt="Avatar">
+                                    {% else %}
+                                        <div class="avatar-large bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="font-size: 3rem;">
+                                            {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
+                                        </div>
+                                    {% endif %}
+                                    <h4 class="fw-bold">{{ user.fullName }}</h4>
+                                    <p class="text-muted">{{ user.email }}</p>
+                                </div>
+
+                                <hr>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong><i class="bi bi-person me-2"></i>Prénom:</strong> {{ user.prenom }}</p>
+                                        <p><strong><i class="bi bi-person-fill me-2"></i>Nom:</strong> {{ user.nom }}</p>
+                                        <p><strong><i class="bi bi-envelope me-2"></i>Email:</strong> {{ user.email }}</p>
+                                        <p><strong><i class="bi bi-telephone me-2"></i>Téléphone:</strong> {{ user.telephone ?: '-' }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong><i class="bi bi-geo-alt me-2"></i>Adresse:</strong> {{ user.adresse ?: '-' }}</p>
+                                        <p><strong><i class="bi bi-shield me-2"></i>Rôle:</strong> {{ user.role }}</p>
+                                        <p><strong><i class="bi bi-calendar me-2"></i>ID:</strong> {{ user.id }}</p>
+                                    </div>
+                                </div>
+
+                                {% if user.candidat %}
+                                    <hr>
+                                    <h6 class="fw-bold mb-3">Informations Candidat</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong><i class="bi bi-mortarboard me-2"></i>Niveau d'études:</strong> {{ user.candidat.niveauEtude ?: '-' }}</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong><i class="bi bi-clock-history me-2"></i>Expérience:</strong> {{ user.candidat.experience }} ans</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {% if user.employe %}
+                                    <hr>
+                                    <h6 class="fw-bold mb-3">Informations Employé</h6>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <p><strong><i class="bi bi-hash me-2"></i>Matricule:</strong> {{ user.employe.matricule }}</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p><strong><i class="bi bi-briefcase me-2"></i>Poste:</strong> {{ user.employe.position }}</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p><strong><i class="bi bi-calendar-check me-2"></i>Date d'embauche:</strong> {{ user.employe.dateEmbauche|date('d/m/Y') }}</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <hr>
+
+                                <div class="d-flex gap-2">
+                                    <a href="{{ path('app_rh_dashboard') }}" class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left me-2"></i>Retour
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+{% endblock %}
