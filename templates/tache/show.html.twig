@@ -24,12 +24,11 @@
                 <td>{{ tache.description }}</td>
             </tr>
             <tr>
-                <th>Date_debut</th>
-                <td>{{ tache.dateDebut }}</td>
+                <td>{{ tache.dateDebut ? tache.dateDebut|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
                 <th>Date_fin</th>
-                <td>{{ tache.dateFin }}</td>
+                <td>{{ tache.dateFin ? tache.dateFin|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
                 <th>Level</th>

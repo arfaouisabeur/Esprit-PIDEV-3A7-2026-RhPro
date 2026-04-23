@@ -1,0 +1,101 @@
+{% extends 'rh/admin_base.html.twig' %}
+
+{% block title %}Tâches du Projet | {{ projet.titre }} | RH Pro{% endblock %}
+
+{% block page_title %}Tâches : {{ projet.titre }}{% endblock %}
+{% block page_subtitle %}Consultez l'état d'avancement des missions opérationnelles{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="{{ path('app_projet_index') }}" class="btn-light-purple d-inline-flex align-items-center gap-2">
+        <i class="bi bi-arrow-left"></i> Retour aux projets
+    </a>
+    <div class="d-flex gap-2">
+        <span class="badge-soft {% if projet.statut == 'termine' %}badge-soft-success{% else %}badge-soft-warning{% endif %}">
+            Projet: {{ projet.statut|upper }}
+        </span>
+    </div>
+</div>
+
+<div class="admin-card" style="padding: 0;">
+    <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+        <div class="admin-card-title mb-0">
+            <div class="admin-card-title-icon"><i class="bi bi-list-check"></i></div>
+            Liste des Tâches ({{ taches|length }})
+        </div>
+    </div>
+    
+    <div class="admin-table-container mx-4 mt-4 mb-4">
+        <table class="admin-table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th>Titre</th>
+                    <th>Statut</th>
+                    <th>Priorité</th>
+                    <th>Assigné à</th>
+                    <th>Date Début</th>
+                    <th>Date Fin</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for tache in taches %}
+                <tr>
+                    <td class="text-muted fw-bold">#{{ tache.id }}</td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ tache.titre }}</div>
+                        <div class="text-muted small text-truncate" style="max-width: 250px;">{{ tache.description ?: 'Aucune description' }}</div>
+                    </td>
+                    <td>
+                        {% if tache.statut == 'terminee' %}
+                            <span class="badge-soft badge-soft-success">TERMINÉE</span>
+                        {% elseif tache.statut == 'en_cours' %}
+                            <span class="badge-soft badge-soft-purple" style="background: #eef2ff; color: #4f46e5;">EN COURS</span>
+                        {% elseif tache.statut == 'bloquee' %}
+                            <span class="badge-soft" style="background: #fef2f2; color: #ef4444;">BLOQUÉE</span>
+                        {% else %}
+                            <span class="badge-soft badge-soft-warning">À FAIRE</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge-soft" style="font-size: 0.7rem; font-weight: 800; border: 1px solid #e2e8f0;">
+                            {{ tache.level|upper ?: 'SIMPLE' }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if tache.employe and tache.employe.user %}
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width:24px; height:24px; border-radius:50%; background:var(--purple-light); display:flex; align-items:center; justify-content:center; color:var(--purple-dark); font-size:0.7rem; font-weight:700;">
+                                    {{ tache.employe.user.prenom|first|upper }}
+                                </div>
+                                <span style="font-size: 0.85rem;">{{ tache.employe.user.fullName }}</span>
+                            </div>
+                        {% else %}
+                            <span class="text-muted small">Non assigné</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="text-muted small">
+                            <i class="bi bi-calendar-event me-1"></i>
+                            {{ tache.dateDebut ? tache.dateDebut|date('d/m/Y') : '--/--/--' }}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="text-muted small">
+                            <i class="bi bi-calendar-check me-1"></i>
+                            {{ tache.dateFin ? tache.dateFin|date('d/m/Y') : '--/--/--' }}
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        Pas encore de tâches pour ce projet.
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
