@@ -1,43 +1,645 @@
-{% extends 'base.html.twig' %}
+{% extends 'rh/admin_base.html.twig' %}
+{% block page_title %}Gestion des Projets{% endblock %}
+{% block page_subtitle %}Pilotez vos projets et suivez leur avancement en temps réel{% endblock %}
+{% block admin_content %}
 
-{% block title %}Projet index{% endblock %}
+<style>
+:root {
+    --purple-primary: #7c3aed;
+    --purple-dark: #6b2d8b;
+    --purple-light: #a78bfa;
+    --purple-bg: #f5f3ff;
+    --purple-hover: #8b5cf6;
+}
 
-{% block body %}
-    <h1>Projet index</h1>
+.modern-header {
+    background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%);
+    border-radius: 24px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(124, 58, 237, 0.2);
+}
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Titre</th>
-                <th>Statut</th>
-                <th>Description</th>
-                <th>Date_debut</th>
-                <th>Date_fin</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
+.modern-header-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.modern-header-icon {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.modern-header-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.modern-header-text h1 {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+}
+
+.modern-header-text p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    font-size: 1rem;
+}
+
+.search-filter-bar {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.search-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.modern-search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 280px;
+    max-width: 400px;
+}
+
+.modern-search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--purple-primary);
+    font-size: 1.1rem;
+    pointer-events: none;
+}
+
+.modern-search-input {
+    width: 100%;
+    padding: 14px 20px 14px 50px;
+    border: 2px solid #e9d5ff;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    outline: none;
+    background: var(--purple-bg);
+    transition: all 0.3s;
+}
+
+.modern-search-input:focus {
+    border-color: var(--purple-primary);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+    background: white;
+}
+
+.modern-filter-select {
+    padding: 14px 20px;
+    border: 2px solid #e9d5ff;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    outline: none;
+    background: var(--purple-bg);
+    cursor: pointer;
+    min-width: 200px;
+    transition: all 0.3s;
+}
+
+.modern-filter-select:focus {
+    border-color: var(--purple-primary);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+    background: white;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-modern {
+    padding: 14px 24px;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.btn-modern-primary {
+    background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+}
+
+.btn-modern-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(124, 58, 237, 0.4);
+    color: white;
+}
+
+.btn-modern-secondary {
+    background: white;
+    color: var(--purple-primary);
+    border: 2px solid var(--purple-primary);
+}
+
+.btn-modern-secondary:hover {
+    background: var(--purple-bg);
+    transform: translateY(-2px);
+    color: var(--purple-primary);
+}
+
+.view-toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    justify-content: flex-end;
+}
+
+.view-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    border: 2px solid #e9d5ff;
+    background: white;
+    color: var(--purple-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    font-size: 1.1rem;
+}
+
+.view-btn.active,
+.view-btn:hover {
+    background: var(--purple-primary);
+    border-color: var(--purple-primary);
+    color: white;
+    transform: scale(1.05);
+}
+
+.project-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.75rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.project-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(124, 58, 237, 0.15);
+    border-color: var(--purple-light);
+}
+
+.project-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.project-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.3rem;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-en-cours {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-termine {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-en-attente {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.status-annule {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.project-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0.75rem 0;
+}
+
+.project-description {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+    flex: 1;
+    line-height: 1.6;
+}
+
+.project-dates {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    border-top: 2px solid var(--purple-bg);
+    border-bottom: 2px solid var(--purple-bg);
+    margin-bottom: 1rem;
+}
+
+.project-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #475569;
+}
+
+.project-date i {
+    color: var(--purple-primary);
+    font-size: 1rem;
+}
+
+.project-responsible {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--purple-bg);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.responsible-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+.responsible-avatar-init {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--purple-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: 2px solid white;
+}
+
+.responsible-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.project-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    flex: 1;
+    min-width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 2px solid #e9d5ff;
+    background: white;
+    color: var(--purple-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.action-btn:hover {
+    background: var(--purple-primary);
+    border-color: var(--purple-primary);
+    color: white;
+    transform: scale(1.05);
+}
+
+.action-btn.delete {
+    border-color: #fecaca;
+    color: #dc2626;
+}
+
+.action-btn.delete:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.empty-state-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    background: var(--purple-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state-icon i {
+    font-size: 3rem;
+    color: var(--purple-primary);
+}
+
+.empty-state h3 {
+    color: #1e293b;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #64748b;
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .modern-header {
+        padding: 1.5rem;
+    }
+    
+    .modern-header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .search-filter-bar {
+        flex-direction: column;
+    }
+    
+    .search-group {
+        width: 100%;
+    }
+    
+    .modern-search-wrap {
+        max-width: 100%;
+    }
+    
+    .action-buttons {
+        width: 100%;
+        flex-direction: column;
+    }
+}
+</style>
+
+<div class="modern-header">
+    <div class="modern-header-content">
+        <div class="modern-header-icon">
+            <i class="bi bi-diagram-3-fill"></i>
+        </div>
+        <div class="modern-header-text">
+            <h1><i class="bi bi-folder-fill"></i> Mes Projets</h1>
+            <p>Consultez et gérez tous vos projets en cours</p>
+        </div>
+    </div>
+</div>
+
+<div class="search-filter-bar">
+    <form id="ajaxSearchForm" method="get" action="{{ path('app_projet_index') }}" class="search-group">
+        <div class="modern-search-wrap">
+            <i class="bi bi-search modern-search-icon"></i>
+            <input type="text" id="searchInput" name="q" value="{{ q|default('') }}" 
+                   class="modern-search-input" placeholder="Rechercher un projet...">
+            <div id="searchSpinner" class="spinner-border spinner-border-sm" role="status" 
+                 style="display:none;position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--purple-primary)">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+        </div>
+        <select id="statutSelect" name="statut" class="modern-filter-select">
+            <option value="">Tous les statuts</option>
+            <option value="en_attente" {% if statut|default('')=='en_attente' %}selected{% endif %}>🕒 À Faire</option>
+            <option value="en_cours" {% if statut|default('')=='en_cours' %}selected{% endif %}>⌛ En cours</option>
+            <option value="termine" {% if statut|default('')=='termine' %}selected{% endif %}>✔ Terminé</option>
+            <option value="annule" {% if statut|default('')=='annule' %}selected{% endif %}>✖ Annulé</option>
+        </select>
+    </form>
+    <div class="action-buttons">
+        <a href="{{ path('app_projet_export_stats') }}" class="btn-modern btn-modern-secondary" target="_blank">
+            <i class="bi bi-file-earmark-bar-graph"></i> Rapport PDF
+        </a>
+        <a href="{{ path('app_projet_new') }}" class="btn-modern btn-modern-primary">
+            <i class="bi bi-plus-lg"></i> Nouveau Projet
+        </a>
+    </div>
+</div>
+
+<div class="view-toggle">
+    <button class="view-btn active" id="btnTable" onclick="setView('table')" title="Vue tableau">
+        <i class="bi bi-table"></i>
+    </button>
+    <button class="view-btn" id="btnCards" onclick="setView('cards')" title="Vue cartes">
+        <i class="bi bi-grid-3x3-gap-fill"></i>
+    </button>
+</div>
+
+<div id="viewTable">
+    <div id="tableContainer" style="transition:opacity .3s">
+        {% include 'projet/_projet_table.html.twig' %}
+    </div>
+</div>
+
+<div id="viewCards" style="display:none">
+    {% if projets|length > 0 %}
+    <div class="row g-4">
         {% for projet in projets %}
-            <tr>
-                <td>{{ projet.id }}</td>
-                <td>{{ projet.titre }}</td>
-                <td>{{ projet.statut }}</td>
-                <td>{{ projet.description }}</td>
-                <td>{{ projet.dateDebut }}</td>
-                <td>{{ projet.dateFin }}</td>
-                <td>
-                    <a href="{{ path('app_projet_show', {'id': projet.id}) }}">show</a>
-                    <a href="{{ path('app_projet_edit', {'id': projet.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
+        {% set emp = projet.responsableEmploye %}
+        <div class="col-md-6 col-xl-4">
+            <div class="project-card">
+                <div class="project-card-header">
+                    <div class="project-icon">
+                        <i class="bi bi-diagram-3-fill"></i>
+                    </div>
+                    {% if projet.statut == 'termine' %}
+                        <span class="status-badge status-termine">✔ Terminé</span>
+                    {% elseif projet.statut == 'en_cours' %}
+                        <span class="status-badge status-en-cours">⌛ En cours</span>
+                    {% elseif projet.statut == 'annule' %}
+                        <span class="status-badge status-annule">✖ Annulé</span>
+                    {% else %}
+                        <span class="status-badge status-en-attente">🕒 À faire</span>
+                    {% endif %}
+                </div>
+                
+                <h3 class="project-title">{{ projet.titre }}</h3>
+                
+                {% if projet.description %}
+                <p class="project-description">
+                    {{ projet.description|slice(0,120) }}{% if projet.description|length > 120 %}...{% endif %}
+                </p>
+                {% endif %}
+                
+                <div class="project-dates">
+                    <div class="project-date">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>{{ projet.dateDebut|date('d/m/Y') }}</span>
+                    </div>
+                    <div class="project-date">
+                        <i class="bi bi-calendar-check"></i>
+                        <span>{{ projet.dateFin|date('d/m/Y') }}</span>
+                    </div>
+                </div>
+                
+                {% if emp and emp.user %}
+                <div class="project-responsible">
+                    {% if emp.user.avatarPath %}
+                        <img src="{{ asset(emp.user.avatarPath) }}" class="responsible-avatar" alt="">
+                    {% else %}
+                        <div class="responsible-avatar-init">{{ emp.user.prenom|first|upper }}</div>
+                    {% endif %}
+                    <span class="responsible-name">{{ emp.user.fullName }}</span>
+                </div>
+                {% endif %}
+                
+                <div class="project-actions">
+                    <a href="{{ path('app_projet_show', {'id': projet.id}) }}" class="action-btn" title="Voir">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="{{ path('app_projet_taches_view', {'id': projet.id}) }}" class="action-btn" title="Tâches">
+                        <i class="bi bi-list-check"></i>
+                    </a>
+                    <a href="{{ path('app_projet_edit', {'id': projet.id}) }}" class="action-btn" title="Modifier">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                    <form method="post" action="{{ path('app_projet_delete', {'id': projet.id}) }}" 
+                          style="display:inline-block;flex:1" 
+                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete'~projet.id) }}">
+                        <button class="action-btn delete" title="Supprimer" style="width:100%">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="bi bi-inbox"></i>
+        </div>
+        <h3>Aucun projet trouvé</h3>
+        <p>Vous n'avez actuellement aucun projet enregistré.</p>
+    </div>
+    {% endif %}
+</div>
 
-    <a href="{{ path('app_projet_new') }}">Create new</a>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+function setView(v) {
+    document.getElementById('viewTable').style.display = v === 'table' ? '' : 'none';
+    document.getElementById('viewCards').style.display = v === 'cards' ? '' : 'none';
+    document.getElementById('btnTable').classList.toggle('active', v === 'table');
+    document.getElementById('btnCards').classList.toggle('active', v === 'cards');
+    localStorage.setItem('projView', v);
+}
+
+const savedView = localStorage.getItem('projView');
+if (savedView) setView(savedView);
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('ajaxSearchForm');
+    const inp = document.getElementById('searchInput');
+    const sel = document.getElementById('statutSelect');
+    const tbl = document.getElementById('tableContainer');
+    const spin = document.getElementById('searchSpinner');
+    let timer;
+    
+    function search() {
+        const url = new URL(window.location.href);
+        url.searchParams.set('q', inp.value);
+        url.searchParams.set('statut', sel.value);
+        window.history.replaceState({}, '', url);
+        
+        spin.style.display = 'block';
+        tbl.style.opacity = '.5';
+        
+        fetch(url.toString(), {
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        })
+        .then(r => r.text())
+        .then(html => {
+            tbl.innerHTML = html;
+        })
+        .finally(() => {
+            spin.style.display = 'none';
+            tbl.style.opacity = '1';
+        });
+    }
+    
+    inp.addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(search, 400);
+    });
+    
+    sel.addEventListener('change', search);
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        search();
+    });
+});
+</script>
 {% endblock %}

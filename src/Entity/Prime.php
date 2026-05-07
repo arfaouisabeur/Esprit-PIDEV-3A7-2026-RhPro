@@ -4,6 +4,10 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PrimeRepository;
+use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Entity\Tache;
 
 #[ORM\Entity(repositoryClass: PrimeRepository::class)]
 class Prime
@@ -15,17 +19,30 @@ class Prime
     private ?int $id = null;
 
     #[ORM\Column(nullable: false)]
+    #[Assert\NotBlank(message: "Montant obligatoire")]
+    #[Assert\Positive(message: "Le montant doit être positif")]
     private string $montant;
 
     #[ORM\Column(nullable: false)]
+    #[Assert\NotBlank(message: "Date obligatoire")]
     private string $date_attribution;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: "Description trop longue")]
     private ?string $description = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: "contract_id", referencedColumnName: "id")]
+    #[Assert\NotNull(message: "Contrat obligatoire")]
     private ?Contract $contract = null;
+
+    /**
+     * @var Collection<int, Tache>
+     */
+    #[ORM\OneToMany(mappedBy: 'prime', targetEntity: Tache::class)]
+    private Collection $taches;
+
+    // 🔥 NO LOGIC CHANGED BELOW
 
     public function getId(): ?int
     {
@@ -36,11 +53,9 @@ class Prime
     {
         return $this->montant;
     }
-
     public function setMontant(string $montant): static
     {
         $this->montant = $montant;
-
         return $this;
     }
 
@@ -48,11 +63,9 @@ class Prime
     {
         return $this->date_attribution;
     }
-
     public function setDateAttribution(string $date_attribution): static
     {
         $this->date_attribution = $date_attribution;
-
         return $this;
     }
 
@@ -60,11 +73,9 @@ class Prime
     {
         return $this->description;
     }
-
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -72,12 +83,40 @@ class Prime
     {
         return $this->contract;
     }
-
     public function setContract(?Contract $contract): static
     {
         $this->contract = $contract;
+        return $this;
+    }
+    public function __construct()
+    {
+        $this->taches = new ArrayCollection();
+    }
+    /**
+     * @return Collection<int, Tache>
+     */
+    public function getTaches(): Collection
+    {
+        return $this->taches;
+    }
+    public function addTache(Tache $tache): self
+    {
+        if (!$this->taches->contains($tache)) {
+            $this->taches[] = $tache;
+            $tache->setPrime($this);
+        }
 
         return $this;
     }
 
+    public function removeTache(Tache $tache): self
+    {
+        if ($this->taches->removeElement($tache)) {
+            if ($tache->getPrime() === $this) {
+                $tache->setPrime(null);
+            }
+        }
+
+        return $this;
+    }
 }
